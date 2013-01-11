@@ -1,0 +1,25 @@
+## -*- coding: utf-8 -*-
+
+% for entry in selection:
+  <h3 class="entryList"><a href="${entry.uri}">${entry.title}</a></h3>
+  % if entry.pubdate != None:
+  <p class="pubDate">${entry.pubdate_human}</p>
+  % endif
+  <div class="entry">
+  % if entry.thumbnail != None:
+    <div class="thumb"><a href="${entry.uri}"><img src="${entry.thumbnail}" alt="" /></a></div>        
+  % endif
+  % if entry.abstract != None:
+    <p class="entry_preview">${entry.abstract}</p>
+  % endif
+  <p class="photonum">
+    % if entry.photos != None:
+      … <a href="${entry.uri}">Read more / ${entry.photos} photos</a>
+    % else:
+      … <a href="${entry.uri}">Read more</a>
+    % endif
+  </p>
+  </div> 
+  <hr class="entry_sep"/>
+
+% endfor

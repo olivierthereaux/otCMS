@@ -1,0 +1,17 @@
+mkdir -p tn
+for i in `ls`
+do
+  if echo "$i" | grep -v tn_ | grep -v "\.html" | grep -v "\.sh" | grep -v "\.rdf" | grep -v "\.md" | grep -v "\.php" | grep -q "\."
+  then
+    failed=0
+    echo -n "$i -> tn/tn_$i.jpg : "
+    convert -quality 100 "$i" -thumbnail '200x200>'  "tn/tn_$i".jpg 2>&1 > /dev/null
+    if [ ! -r "tn/tn_$i.jpg" ]
+    then
+        echo failed creating.
+        failed=1
+    else
+        echo done.
+    fi
+  fi
+done

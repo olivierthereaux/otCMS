@@ -1,0 +1,11 @@
+## -*- coding: utf-8 -*-
+<%page args="loctype, locations"/>
+
+<h3 class="clear">Discover by ${loctype}</h3>
+
+<ul class="inline">
+% for location in locations:
+  <li class="wide"><a href="${location.uri}">${location.name}</a> (${location.count})</li>
+% endfor
+</ul>
+<hr class="clear">

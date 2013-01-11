@@ -1,0 +1,198 @@
+
+
+<!--
+
+<h2 id="quotidian">Flavours of the Quotidian</h2>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script src="/js/jquery.easing.1.3.js"></script>
+<script src="/js/slides.min.jquery.js"></script>
+<script>
+	$(function(){
+	  $('.next').each(function() {
+      this.ontouchstart = function(event) {
+        this.className = "next hovered";
+      };
+	    
+      this.ontouchend = function(event) {
+        this.className = "next nothovered";
+      };
+    });
+	  $('.prev').each(function() {
+      this.ontouchstart = function(event) {
+        this.className = "prev hovered";
+      };
+	    
+      this.ontouchend = function(event) {
+        this.className = "prev nothovered";
+      };
+    });
+    
+		$('#slides').slides({
+			preloadImage: '/images/loading.gif', 
+			generatePagination: false, 
+			animationStart: function(current){
+				$('.caption').animate({
+					bottom:-34
+				},100);
+			},
+			animationComplete: function(current){
+				$('.caption').animate({
+					bottom:0
+				},200);
+			},
+			slidesLoaded: function() {
+				$('.caption').animate({
+					bottom:0
+				},200);
+			}
+		});
+		
+	});
+</script>
+<style type="text/css">
+
+#slides {
+	z-index:100;
+	height: 630px;
+	text-align: center;
+}
+.slides_container {
+	width:650px;
+	height:612px;
+	overflow:hidden;
+	position:relative;
+	display:none;
+}
+.slides_container a {
+	width:650px;
+	height:612px;
+	display:block;
+	border-bottom: 0 !important;
+}
+#slides .prev { 
+	position:relative;
+	display:block;
+  top:-612px;
+  left:-86px;
+  height: 331px;
+	width:130px;
+	z-index:101;
+	text-align: left;
+	padding-top: 280px;
+	padding-left: 80px;
+  -webkit-border-top-left-radius: 40px;
+  -webkit-border-bottom-left-radius: 40px;
+  -moz-border-radius-topleft: 40px;
+  -moz-border-radius-bottomleft: 40px;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;	
+  border: 0;
+}
+#slides .next {
+	position:relative;
+  display:block;
+  top: -1222px;
+	left:515px;
+	width:180px;
+  height: 331px;
+  padding-top: 280px;
+	padding-left: 38px;
+	z-index:101;
+	-webkit-border-top-right-radius: 40px;
+  -webkit-border-bottom-right-radius: 40px;
+  -moz-border-radius-topright: 40px;
+  -moz-border-radius-bottomright: 40px;
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 40px;
+  border: 0;
+  
+}
+
+
+#slides .prev:link, #slides .next:link, #slides .prev:visited, #slides .next:visited  {
+  background:rgba(0,0,0,0);
+}
+
+#slides .prev:active, #slides .next:active, #slides .prev:hover, #slides .next:hover,  #slides .hovered  {
+  background:rgba(0,0,0,.5);
+}
+
+#slides .nothovered   {
+  background:rgba(0,0,0,0) !important;
+}
+
+.caption {
+  z-index:500;
+  position:absolute;
+  bottom: 0;
+  left:0;
+  height: 25px;
+  line-height: 18px;
+	padding: 8px 0 0 0;
+	background:#000;
+  background:rgba(0,0,0,.6);
+	width:612px;
+	margin: 0 auto 0 19px !important;
+	font-size: 16px;
+	color: #fff;
+	border-top:1px solid #000;
+	text-shadow:none;
+}
+
+/*.pagination {
+  position:absolute;
+  height: 50px;
+  top: 990px;
+  margin: 0 160px;
+  width:300px;
+}
+.pagination li {
+  float:left;
+  margin:0 1px;
+  list-style:none !important;
+}
+.pagination li a {
+  display:block;
+  width:12px;
+  height:0;
+  padding-top:12px;
+  background-image:url(/images/pagination.png);
+  border: 0 !important;
+  background-position:0 0;
+  float:left;
+  overflow:hidden;
+}
+.pagination li.current a {
+  background-position:0 -12px;
+}
+*/
+</style>
+<div id="slides">
+	<div class="slides_container">
+    <div class="slide"><a href="http://instagr.am/p/SxyvqYg4sZ/"><img src="/2012/12-03-14be008c3d5711e286a922000a1fb703_7.jpg" height="612" width="612" title="#fuckyeahandalucia" alt="#fuckyeahandalucia" /></a><div class="caption">#fuckyeahandalucia &mdash; Teatro Romano,  03 December 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/Ss-N2AA4ub/"><img src="/2012/12-01-759c130a3bde11e2a74822000a9e2993_7.jpg" height="612" width="612" title="" alt="" /></a><div class="caption"> &mdash;  01 December 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/Qt1Tw2A4m5/"><img src="/2012/10-13-b603cb3e151111e28b0122000a1f8e95_7.jpg" height="612" width="612" title="Emile" alt="Emile" /></a><div class="caption">Emile &mdash;  13 October 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/QU1gWwA4h3/"><img src="/2012/10-03-d38093a20d7011e2adfe22000a1e8a47_7.jpg" height="612" width="612" title="I'M ON A BOAT" alt="I'M ON A BOAT" /></a><div class="caption">I'M ON A BOAT &mdash; Bolder,  03 October 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/QCXYNUg4lY/"><img src="/2012/09-26-ccb8b62407cd11e2957722000a1e9dcb_7.jpg" height="612" width="612" title="Passive-aggressive masterclass" alt="Passive-aggressive masterclass" /></a><div class="caption">Passive-aggressive masterclass &mdash; BBC Media Village,  26 September 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/PraHNJg4jV/"><img src="/2012/09-17-4333480400cc11e28ed022000a1d0137_7.jpg" height="612" width="612" title="The “Go Home” switch" alt="The “Go Home” switch" /></a><div class="caption">The “Go Home” switch &mdash; BBC Henry Wood House,  17 September 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/PgcrBiA4iF/"><img src="/2012/09-13-03184ca2fd7411e1b8e822000a1e8b8e_7.jpg" height="612" width="612" title="O" alt="O" /></a><div class="caption">O &mdash;  13 September 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/OYfWlQg4je/"><img src="/2012/08-16-48c7eaa2e77e11e1bbd422000a1e954d_7.jpg" height="612" width="612" title="Morning snack, fresh from Barb's balcony" alt="Morning snack, fresh from Barb's balcony" /></a><div class="caption">Morning snack, fresh from Barb's balcony &mdash; BBC Henry Wood House,  16 August 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/NnqYnKA4rD/"><img src="/2012/07-28-a03176c8d89711e1a15e12313804f546_7.jpg" height="612" width="612" title="Oups." alt="Oups." /></a><div class="caption">Oups. &mdash;  28 July 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/NWkxGVg4rI/"><img src="/2012/07-21-a4c1fc12d36011e1b53322000a1e882b_7.jpg" height="612" width="612" title="Lost (and not yet found)" alt="Lost (and not yet found)" /></a><div class="caption">Lost (and not yet found) &mdash; Islington Green,  21 July 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/NT24yrg4rE/"><img src="/2012/07-20-6351a374d28c11e192ea12313b06ea11_7.jpg" height="612" width="612" title="Wonders on the pavement" alt="Wonders on the pavement" /></a><div class="caption">Wonders on the pavement &mdash;  20 July 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/NQc75uA4mj/"><img src="/2012/07-19-55803ed2d18211e19f661231381b69db_7.jpg" height="612" width="612" title="Ssssssqueaky stuff" alt="Ssssssqueaky stuff" /></a><div class="caption">Ssssssqueaky stuff &mdash;  19 July 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/NBUVazA4rv/"><img src="/2012/07-13-f5999b28cce311e1a8761231381b4856_7.jpg" height="612" width="612" title="In the studio, amateur voice-overs with @moustaki" alt="In the studio, amateur voice-overs with @moustaki" /></a><div class="caption">In the studio, amateur voice-overs with @moustaki &mdash; BBC Broadcasting House,  13 July 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/MeOPGGA4pw/"><img src="/2012/06-29-23ba060cc22e11e1abd612313810100a_7.jpg" height="612" width="612" title="Still the best in town…" alt="Still the best in town…" /></a><div class="caption">Still the best in town… &mdash;  29 June 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/MKvZ6GA4t6/"><img src="/2012/06-22-21054ff4bc3c11e1abb01231382049c1_7.jpg" height="612" width="612" title="Shop window, Brussels" alt="Shop window, Brussels" /></a><div class="caption">Shop window, Brussels &mdash;  22 June 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/MGewsRA4ki/"><img src="/2012/06-20-4f599e4ebaef11e18cf91231380fd29b_7.jpg" height="612" width="612" title="Stop, Look and Listen" alt="Stop, Look and Listen" /></a><div class="caption">Stop, Look and Listen &mdash; Station Brussel-Zuid / Gare De Bruxelles-Midi,  20 June 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/MC-abMg4q8/"><img src="/2012/06-19-730b043ab9dd11e1abd612313810100a_7.jpg" height="612" width="612" title="I appear to be the Romanian delegation today. #EC" alt="I appear to be the Romanian delegation today. #EC" /></a><div class="caption">I appear to be the Romanian delegation today. #EC &mdash;  19 June 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/L2zCm9A4jc/"><img src="/2012/06-14-1151789cb62611e1aebc1231381b647a_7.jpg" height="612" width="612" title="Waiting for a meeting. Tsonga playing tennis, Cameron playing dodgeball." alt="Waiting for a meeting. Tsonga playing tennis, Cameron playing dodgeball." /></a><div class="caption">Waiting for a meeting. Tsonga playing tennis, Cameron playing dodgeball. &mdash; BBC Television Centre,  14 June 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/KMtfbNA4vB/"><img src="/2012/05-04-0af5e26095c611e180c9123138016265_7.jpg" height="612" width="612" title="Antsy" alt="Antsy" /></a><div class="caption">Antsy &mdash; BBC Quay House,  04 May 2012</div></div>
+<div class="slide"><a href="http://instagr.am/p/JKRmvOA4rR/"><img src="/2012/04-08-c0aa0e48817f11e192e91231381b3d7a_7.jpg" height="612" width="612" title="French Touch" alt="French Touch" /></a><div class="caption">French Touch &mdash;  08 April 2012</div></div>
+
+  </div>
+	<a href="#" class="prev"><img src="/images/arrow-prev.png" width="24" height="43" alt="Arrow Prev"></a>
+	<a href="#" class="next"><img src="/images/arrow-next.png" width="24" height="43" alt="Arrow Next"></a>
+</div>
+
+-->

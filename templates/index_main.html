@@ -1,0 +1,13 @@
+<%page args="latest_selection, random_selection, title, page_description=None, page_type=''"/>
+<%include file="header.html"/>
+
+  <h2>Recent Entries</h2>
+
+  ${latest_selection}
+
+  <h2>Random picks from the archives</h2>
+
+  ${random_selection}
+
+<%include file="bottom_nav.html"/>
+<%include file="footer.html"/>
