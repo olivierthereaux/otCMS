@@ -5,7 +5,7 @@ otCMS is the diminutive CMS used to run the site [olivier.thereaux.net](http://o
 ## Ceci n'est pas un CMS
 
 * *No dynamic code*. My site doen't have comments, accounts, personalisation or any such thing. It means I can write or generate flat HTML files, and the site will “just work” pretty much wherever I serve it from - even if the CMS is broken.
-* *Minimal dependencies*. This CMS is written in python, which comes by default with a very rich library. I did not want to depend on too many libraries which would hinder portability. So far, I have managed to stick to two library dependencies, and imagemagick for image 
+* *Minimal dependencies*. This CMS is written in python, which comes by default with a very rich library. I did not want to depend on too many libraries which would hinder portability. So far, I have managed to stick to two library dependencies, and imagemagick for thumbnail creation 
 * *No database* - The catalog of entries is a flat file, both machine-readable and human-writable. I looked at a few formats (such as yaml) but decided to stick to a python syntax. See samples/catalog.py.
 * *Simple publication mechanism*. A few scripts should be enough to (re)generate html files with simple templates. Git or any other versioning system can then take over as versioning, distribution and backup mechanism.
 * *No editor*. I write entries by hand, using a mix of markdown and HTML. The CMS takes care of adding all the navigation, headers, footers and generates all the indexes and feeds. 
