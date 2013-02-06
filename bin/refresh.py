@@ -31,11 +31,12 @@ class Usage(Exception):
 
 def main(argv=None):
     private = False
+    indexes = True
     if argv is None:
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "hp", ["help"])
+            opts, args = getopt.getopt(argv[1:], "hp", ["help", "noindex"])
         except getopt.error, msg:
             raise Usage(msg)
     
@@ -43,6 +44,8 @@ def main(argv=None):
         for option, value in opts:
             if option == "-p":
                 private = True
+            if option == "--noindex":
+                indexes = False
             if option in ("-h", "--help"):
                 raise Usage(help_message)
     
@@ -213,7 +216,7 @@ def main(argv=None):
 
     # 4. Generate archives pages
 
-    if private == False: # do not generate archives and indexes for private entries
+    if private == False and indexes == True: # do not generate archives and indexes for private entries
 
         # 4.1 Generate full archive
         mytemplate = mylookup.get_template("index_all.html")
