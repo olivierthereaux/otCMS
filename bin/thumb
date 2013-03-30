@@ -5,7 +5,10 @@ do
   then
     failed=0
     echo -n "$i -> tn/tn_$i.jpg : "
-    convert -quality 100 "$i" -thumbnail '200x200>'  "tn/tn_$i".jpg 2>&1 > /dev/null
+    # convert -quality 100 "$i" -thumbnail '200x200>'  "tn/tn_$i".jpg 2>&1 > /dev/null
+    # 2013-03 - square crop, slightly larger
+      convert "$i"  -thumbnail 250x250^ -gravity center -extent 250x250 "tn/tn_$i".jpg 2>&1 > /dev/null
+
     if [ ! -r "tn/tn_$i.jpg" ]
     then
         echo failed creating.
