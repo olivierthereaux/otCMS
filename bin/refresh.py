@@ -198,7 +198,6 @@ def main(argv=None):
         else:
             dest = source+".html"
             source = source+".md"
-    
         source_fn = join(path, source)
         page_html = markdown2.markdown_path(source_fn)
         entry.body = page_html
@@ -212,6 +211,15 @@ def main(argv=None):
                                         page_description = entry.abstract
                                         ).encode("utf-8") )
         dest_fh.close()
+        if re.search(r"index", source):
+            rdf = re.sub(r"index\..*", "", source)+"meta.rdf"
+            rdf_fn = join(path, rdf)
+            rdf_fh = open(rdf_fn, "w")
+            mytemplate = mylookup.get_template("meta.rdf")
+            rdf_fh.write( mytemplate.render_unicode(
+                                            uri= entry.uri,
+                                            title= entry.title).encode("utf-8") )
+            rdf_fh.close()
 
 
     # 4. Generate archives pages
