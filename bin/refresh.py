@@ -301,7 +301,11 @@ def main(argv=None):
         # 5. Generate the Home Page 
 
         latest_selection=entries[0:4]
-        random_selection=random.sample(entries, 4)
+        entries_featurable = list()
+        for entry in entries:
+            if entry.abstract != None and entry.thumbnail != None and entry not in latest_selection:
+                entries_featurable.append(entry)
+        random_selection=random.sample(entries_featurable, 4)
         latest_selection_html = selection_template.render_unicode(selection = latest_selection)
         random_selection_html = selection_template.render_unicode(selection = random_selection)
         title= u"2 Neurones &amp; 1 Camera - by @olivierthereaux"
