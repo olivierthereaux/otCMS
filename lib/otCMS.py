@@ -57,12 +57,13 @@ class otCMSEntry(object):
     state = None
     location = None
     body = None
+    language = None
     
     def __init__(self):
         super(otCMSEntry, self).__init__()
 
     def parameters():
-        return ['uri', 'title', 'pubdate', 'pubdate_human', 'photos', 'abstract', 'year', 'continent', 'country', 'city', 'region', 'state', 'location', 'body']
+        return ['uri', 'title', 'language','pubdate', 'pubdate_human', 'photos', 'abstract', 'year', 'continent', 'country', 'city', 'region', 'state', 'location', 'body']
     
     def fromdict(self, dict_entry):
         if dict_entry.has_key("URI"):
@@ -79,6 +80,8 @@ class otCMSEntry(object):
             self.photos = dict_entry["Photos"]
         if dict_entry.has_key("Abstract"):
             self.abstract = dict_entry["Abstract"]
+        if dict_entry.has_key("Language"):
+            self.language = dict_entry["Language"]
         if dict_entry.has_key("Year"):
             self.year = dict_entry["Year"]
         if dict_entry.has_key("Continent"):
@@ -126,6 +129,8 @@ class otCMSEntry(object):
             dict_entry["Location"] = self.location
         if self.body != None:
             dict_entry["Body"] = self.body
+        if self.language != None:
+            dict_entry["Language"] = self.language
         return dict_entry
 
 

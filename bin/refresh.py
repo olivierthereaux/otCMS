@@ -208,7 +208,8 @@ def main(argv=None):
                                         body= page_html,
                                         title= entry.title,  
                                         page_type="Page",
-                                        page_description = entry.abstract
+                                        page_description = entry.abstract,
+                                        page_language = entry.language
                                         ).encode("utf-8") )
         dest_fh.close()
         if re.search(r"index", source):
@@ -233,7 +234,8 @@ def main(argv=None):
                                         yearly_entries=yearly_all_html,
                                         title='Archives',  
                                         page_type="Index",
-                                        page_description = ""
+                                        page_description = "",
+                                        page_language = ""
                                         ).encode("utf-8") )
         os.rename(join(path, 'all.html.tmp'), join(path, 'all.html'))
 
@@ -246,7 +248,8 @@ def main(argv=None):
                                             title='Archives: ' + str(year) ,  
                                             page_type="Index",
                                             intro = '',
-                                            page_description = ""
+                                            page_description = "",
+                                            page_language = ""
                                             ).encode("utf-8") )
             os.rename(join(path, str(year), 'index.html.tmp'), join(path, str(year), 'index.html'))
 
@@ -277,7 +280,8 @@ def main(argv=None):
                                         title=u'Archives: Around the world',  
                                         page_type="Index",
                                         intro = geo_html,
-                                        page_description = ""
+                                        page_description = "",
+                                        page_language = ""
                                         ).encode("utf-8") )
         os.rename(join(path, "geo", 'index.html.tmp'), join(path, "geo", 'index.html'))
     
@@ -293,7 +297,8 @@ def main(argv=None):
                                             title=u'Entries in ' + location_types[loc_name] +": "+ loc_name,  
                                             page_type="Index",
                                             intro = '',
-                                            page_description = ""
+                                            page_description = "",
+                                            page_language = ""
                                             ).encode("utf-8") )
             os.rename(join(path, "geo", loc+'.html.tmp'), join(path, "geo", loc+'.html'))
 
@@ -319,7 +324,8 @@ def main(argv=None):
                                         latest_selection=latest_selection_html, 
                                         random_selection=random_selection_html, 
                                         title=title, page_description=page_description, 
-                                        page_type=page_type
+                                        page_type=page_type,
+                                        page_language = ""
                                         ).encode("utf-8") )
 
         index.close()
