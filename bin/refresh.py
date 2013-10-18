@@ -87,18 +87,34 @@ def main(argv=None):
     yearly_selection = dict() # dict of entries per year
     yearly_all_html = u'' # html block with all entries, per year
     yearly_selection_html = dict() # dictionary of html block, per year
+    yearly_lang_selection = dict()
+    yearly_lang_selection['en'] = dict()
+    yearly_lang_selection['fr'] = dict()
+    yearly_lang_html = dict()
+    yearly_lang_html['en'] = u''
+    yearly_lang_html['fr'] = u''
 
     for entry in entries:
         if entry.year != None:
             if entry.year not in years:
                 years.append(entry.year)
                 yearly_selection[entry.year] = list()
+                yearly_lang_selection['en'][entry.year] = list()
+                yearly_lang_selection['fr'][entry.year] = list()
             yearly_selection[entry.year].append(entry)
+            yearly_lang_selection[entry.language][entry.year].append(entry)
     for year in years:
         yearly_all_html = yearly_all_html + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year} 
         yearly_selection_html[year] = selection_template.render_unicode(selection = yearly_selection[year])
         yearly_all_html = yearly_all_html + selection_template.render_unicode(selection = yearly_selection[year])
-     
+        if yearly_lang_selection['en'].has_key(year):
+            if len(yearly_lang_selection['en'][year]) > 0:
+                yearly_lang_html['en'] = yearly_lang_html['en'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year} 
+                yearly_lang_html['en'] = yearly_lang_html['en']+ selection_template.render_unicode(selection = yearly_lang_selection['en'][year])
+        if yearly_lang_selection['fr'].has_key(year):
+            if len(yearly_lang_selection['fr'][year]) > 0:
+                yearly_lang_html['fr'] = yearly_lang_html['fr'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year} 
+                yearly_lang_html['fr'] = yearly_lang_html['fr']+ selection_template.render_unicode(selection = yearly_lang_selection['fr'][year])
     
     # 2. Preparation for ocation based archives / index
     locations = list() # list of all locations. Should be alphabetically sorted
@@ -235,9 +251,36 @@ def main(argv=None):
                                         title='Archives',  
                                         page_type="Index",
                                         page_description = "",
+                                        page_intro = u'',
                                         page_language = ""
                                         ).encode("utf-8") )
         os.rename(join(path, 'all.html.tmp'), join(path, 'all.html'))
+
+
+
+        # 4.1 Generate lang-based archive
+        for lang in ['en', 'fr']:
+            if lang == 'en':
+                title= u"Archives: in English"
+            else: #fr
+                title= u"Archives: en Français"
+            
+            filename = "all_"+lang+'.html'
+            filename_tmp = "all_"+lang+'.html.tmp'
+            desc_template = mylookup.get_template("intro_"+lang+".html")
+            desc_template.render_unicode()
+            mytemplate = mylookup.get_template("index_all.html")
+            index = open(join(path, filename_tmp), 'w')
+            index.write( mytemplate.render_unicode(
+                                            yearly_entries=yearly_lang_html[lang],
+                                            title= title,  
+                                            page_type="Index",
+                                            page_description = '',
+                                            page_intro = desc_template.render_unicode(),
+                                            page_language = lang
+                                            ).encode("utf-8") )
+            os.rename(join(path, filename_tmp), join(path, filename))
+
 
         # 4.2 Generate per-year archive pages 
         for year in years:
