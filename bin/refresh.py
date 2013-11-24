@@ -252,7 +252,8 @@ def main(argv=None):
                                         page_type="Index",
                                         page_description = "",
                                         page_intro = u'',
-                                        page_language = ""
+                                        page_language = "",
+                                        page_include_nav = 1
                                         ).encode("utf-8") )
         os.rename(join(path, 'all.html.tmp'), join(path, 'all.html'))
 
@@ -277,7 +278,8 @@ def main(argv=None):
                                             page_type="Index",
                                             page_description = '',
                                             page_intro = desc_template.render_unicode(),
-                                            page_language = lang
+                                            page_language = lang, 
+                                            page_include_nav = None
                                             ).encode("utf-8") )
             os.rename(join(path, filename_tmp), join(path, filename))
 
