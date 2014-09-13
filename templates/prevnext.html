@@ -1,0 +1,12 @@
+## -*- coding: utf-8 -*-
+<%page args="page_language, previous_body, next_body"/>
+% if page_language == "en":
+  <h2>Previous/Next</h2>
+% endif
+% if page_language == "fr":
+  <h2>Avant/Après</h2>
+% endif
+
+
+${next_body}
+${previous_body}

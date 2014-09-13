@@ -1,0 +1,11 @@
+## -*- coding: utf-8 -*-
+<%page args="page_language, nearby_body"/>
+% if page_language == "en":
+  <h2>Nearby</h2>
+% endif
+% if page_language == "fr":
+  <h2>Dans les environs</h2>
+% endif
+
+
+${nearby_body}

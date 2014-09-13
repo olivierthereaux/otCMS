@@ -65,6 +65,9 @@ class otCMSEntry(object):
     def parameters():
         return ['uri', 'title', 'language','pubdate', 'pubdate_human', 'photos', 'abstract', 'year', 'continent', 'country', 'city', 'region', 'state', 'location', 'body']
     
+    def __eq__(self, other):
+        return self.uri == other.uri
+    
     def fromdict(self, dict_entry):
         if dict_entry.has_key("URI"):
             self.uri = dict_entry["URI"]

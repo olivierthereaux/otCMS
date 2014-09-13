@@ -203,6 +203,61 @@ def main(argv=None):
 
     # 3. Generate individual entries from their MarkDown source
     for entry in entries:
+        i=entries.index(entry)
+        previous = entries[i-1] if i>0 else None
+        next = entries[i+1] if i<len(entries)-1 else None
+        previous_html_block = selection_template.render_unicode(selection = [previous]) if previous else ''
+        next_html_block = selection_template.render_unicode(selection = [next]) if next else ''
+        mytemplate = mylookup.get_template("prevnext.html")
+        prevnext_html = mytemplate.render_unicode(
+                                        previous_body= previous_html_block, 
+                                        next_body= next_html_block, 
+                                        page_language = entry.language
+                                        ) 
+                                        
+        mytemplate = mylookup.get_template("nearby.html")
+        nearby_list = list()
+        if entry.city != None:        
+            try:
+                nearby_list= nearby_list+loc_selection[entry.city]
+                nearby_list = sorted(set(nearby_list))
+                nearby_list.remove(entry)
+            except:
+                pass
+        if entry.state != None and len(nearby_list) < 5:
+            try:
+                nearby_list= nearby_list+loc_selection[entry.state]
+                nearby_list = sorted(set(nearby_list))
+                nearby_list.remove(entry)
+            except:
+                pass
+        if entry.region != None and len(nearby_list) < 5:
+            try:
+                nearby_list= nearby_list+loc_selection[entry.region]
+                nearby_list = sorted(set(nearby_list))
+                nearby_list.remove(entry)
+            except:
+                pass
+        if entry.country != None and len(nearby_list) < 5:
+            try:
+                nearby_list= nearby_list+loc_selection[entry.country]
+                nearby_list = sorted(set(nearby_list))
+                nearby_list.remove(entry)
+            except:
+                pass
+
+        if len(nearby_list)>5:
+            nearby_list=random.sample(nearby_list, 5)
+            
+        nearby_html_block = selection_template.render_unicode(selection = nearby_list) if len(nearby_list)>0 else ''
+        nearby_html = u''
+        if nearby_list:
+            nearby_html = mytemplate.render_unicode(
+                                            nearby_body = nearby_html_block,
+                                            page_language = entry.language
+                                            ) 
+                                            
+        
         source = entry.uri
         source = re.sub(r"^/", "", source)
         if re.search(r".*\.html$", source):
@@ -225,7 +280,9 @@ def main(argv=None):
                                         title= entry.title,  
                                         page_type="Page",
                                         page_description = entry.abstract,
-                                        page_language = entry.language
+                                        page_language = entry.language,
+                                        prevnext_body = prevnext_html, 
+                                        nearby_body = nearby_html
                                         ).encode("utf-8") )
         dest_fh.close()
         if re.search(r"index", source):
