@@ -205,7 +205,15 @@ def main(argv=None):
     for entry in entries:
         i=entries.index(entry)
         previous = entries[i-1] if i>0 else None
+        # ignoring non-dated entry pages
+        if previous:
+            if previous.year == None:
+                previous = None
         next = entries[i+1] if i<len(entries)-1 else None
+        # ignoring non-dated entry pages
+        if next:
+            if next.year == None:
+                next = None
         previous_html_block = selection_template.render_unicode(selection = [previous]) if previous else ''
         next_html_block = selection_template.render_unicode(selection = [next]) if next else ''
         mytemplate = mylookup.get_template("prevnext.html")
