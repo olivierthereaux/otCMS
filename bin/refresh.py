@@ -245,6 +245,13 @@ def main(argv=None):
                 nearby_list.remove(entry)
             except:
                 pass
+        if entry.continent != None and len(nearby_list) < 3:
+            try:
+                nearby_list= nearby_list+loc_selection[entry.continent]
+                nearby_list = sorted(set(nearby_list))
+                nearby_list.remove(entry)
+            except:
+                pass
 
         if len(nearby_list)>5:
             nearby_list=random.sample(nearby_list, 5)
