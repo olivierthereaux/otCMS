@@ -214,14 +214,18 @@ def main(argv=None):
         if next:
             if next.year == None:
                 next = None
+            
         previous_html_block = selection_template.render_unicode(selection = [previous]) if previous else ''
         next_html_block = selection_template.render_unicode(selection = [next]) if next else ''
         mytemplate = mylookup.get_template("prevnext.html")
-        prevnext_html = mytemplate.render_unicode(
+        if entry.year == None: # for contact page etc, non-dated stuff; no need for that nav
+            prevnext_html = ''
+        else:
+            prevnext_html = mytemplate.render_unicode(
                                         previous_body= previous_html_block, 
                                         next_body= next_html_block, 
                                         page_language = entry.language
-                                        ) 
+                                        )
                                         
         mytemplate = mylookup.get_template("nearby.html")
         nearby_list = list()
