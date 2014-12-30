@@ -12,6 +12,7 @@ import getopt
 import os
 import random
 import re
+import cgi
 import time
 from os.path import join, dirname, exists, realpath
 import markdown2
@@ -295,11 +296,15 @@ def main(argv=None):
         dest_fn = join(path, dest)
         dest_fh = open(dest_fn, "w")
         mytemplate = mylookup.get_template("page.html")
+        tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
+        if entry.abstract:
+            clean_abstract = tag_re.sub('', entry.abstract)
+            clean_abstract = re.sub('[<>]', '', clean_abstract)
         dest_fh.write( mytemplate.render_unicode(
                                         body= page_html,
                                         title= entry.title,  
                                         page_type="Page",
-                                        page_description = entry.abstract,
+                                        page_description = clean_abstract,
                                         page_language = entry.language,
                                         prevnext_body = prevnext_html, 
                                         nearby_body = nearby_html
