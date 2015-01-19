@@ -40,6 +40,17 @@ def readRDF(fname):
         description = re.search(r'<s0:description>(.*)</s0:description>', rdf).group(1)
     except:
         pass
+    try:
+        coverage = re.search(r'<s0:coverage>(.*)</s0:coverage>', rdf).group(1)
+    except:
+        pass
+    if description == coverage:
+        description = title + " - "+coverage
+    try:
+        date = re.search(r'<s0:date>(.*)</s0:date>', rdf).group(1)
+        description = description + ". " + date
+    except:
+        pass
     return title, description
     
 
@@ -98,7 +109,8 @@ def main(argv=None):
                     alt_text = "Photo: "+title
                     title_text = description
                     link_text = title
-                print '''<div class="gallone"><a href="%(fname)s.html" title=""><img src="tn/tn_%(fname)s.jpg" alt="%(alt_text)s" title="%(title_text)s" /></a><p><a href="%(fname)s.html">%(link_text)s</a></p></div>''' % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text}
+                print '''<div class="gallone"><a href="%(fname)s" class="fresco" data-fresco-group="gall" data-fresco-caption="%(title_text)s" data-fresco-group-options="ui: 'inside'" title="%(title_text)s"><img src="tn/tn_%(fname)s.jpg" alt="%(alt_text)s"  /></a>
+<p><a href="%(fname)s" class="fresco" data-fresco-group="gall_text" data-fresco-group-options="ui: 'inside'">%(link_text)s</a></p></div>''' % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text}
         print '</div>'
 
 if __name__ == '__main__':
