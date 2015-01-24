@@ -51,11 +51,13 @@ def main():
             input_date = raw_input('Date? (Default: %s)    ' % album_date)
             if input_date == "":
                 input_date = album_date
-            input_desc = raw_input('Description?  ')
-            delimiter = u""
+            input_desc = raw_input('Description? (Default: %s) ' % input_title)
+            delimiter = u" "
+            if input_desc == "":
+                input_desc = input_title
             if (len(input_desc) != 0):
                 if (input_desc[-1] != u"."):
-                    delimiter = u", "
+                    delimiter = u" - "
                     
             rdf_text = rdf_template % {"TITLE": input_title.decode("utf-8"), "LOCATION": input_location.decode("utf-8"), 
             "DATE": input_date.decode("utf-8"), "DESCRIPTION": input_desc.decode("utf-8"), "DELIMITER": delimiter}

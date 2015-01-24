@@ -77,49 +77,38 @@ def main(argv=None):
         return 2
     
     if inline:
-        dirList=os.listdir(".")
-        for fname in dirList:
-            if re.search(r".jpg$", fname):
-                file_base = re.sub(r"\..*$", "", fname)
-                alt_text = ''
-                link_text = ''
-                title_text = ''
-                rdf_fname = file_base+".rdf"
-                if rdf_fname in dirList:
-                    title, description = readRDF(rdf_fname)
-                    alt_text = "Photo: "+title
-                    title_text = description
-                    link_text = title
-                print '''<div class="picCenter picCaption">
-    <img src="%(fname)s" alt="%(alt_text)s" />
+        template_markup = '''<div class="picCenter picCaption">
+    <a href="%(fname)s" class="fresco" ><img src="%(fname)s" alt="%(alt_text)s" /></a>
     <p>%(title_text)s</p>
-</div>''' % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text}
-    else:
+</div>'''
+    else: 
         print '<div class="gall">'
-        dirList=os.listdir(".")
-        for fname in dirList:
-            if re.search(r".jpg$", fname):
-                file_base = re.sub(r"\..*$", "", fname)
-                alt_text = ''
-                link_text = ''
-                title_text = ''
-                rdf_fname = file_base+".rdf"
-                if rdf_fname in dirList:
-                    title, description = readRDF(rdf_fname)
-                    alt_text = "Photo: "+title
-                    title_text = description
-                    link_text = title
-                print '''<div class="gallone">
-    <a href="%(fname)s" class="fresco" 
-    data-fresco-group="gall" 
-    data-fresco-caption="%(title_text)s" 
-    title="%(title_text)s"
-    data-fresco-options="thumbnail: 'tn/tn_%(fname)s.jpg'">
-        <img src="tn/tn_%(fname)s.jpg" alt="%(alt_text)s"  />
-    </a>
-    <p><a href="%(fname)s" class="fresco" 
-    data-fresco-group="gall_text" >%(link_text)s</a></p>
-</div>''' % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text}
+        template_markup =  '''  <div class="gallone">
+        <a href="%(fname)s" class="fresco" 
+        data-fresco-group="gall" 
+        data-fresco-caption="%(title_text)s" 
+        title="%(title_text)s"
+        data-fresco-options="thumbnail: 'tn/tn_%(fname)s.jpg'">
+            <img src="tn/tn_%(fname)s.jpg" alt="%(alt_text)s"  />
+        </a>
+        <p><a href="%(fname)s" class="fresco" 
+        data-fresco-group="gall_text" >%(link_text)s</a></p>
+    </div>'''
+    dirList=os.listdir(".")
+    for fname in dirList:
+        if re.search(r".jpg$", fname):
+            file_base = re.sub(r"\..*$", "", fname)
+            alt_text = ''
+            link_text = ''
+            title_text = ''
+            rdf_fname = file_base+".rdf"
+            if rdf_fname in dirList:
+                title, description = readRDF(rdf_fname)
+                alt_text = "Photo: "+title
+                title_text = description
+                link_text = title
+            print template_markup % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text}
+    if not inline:
         print '</div>'
 
 if __name__ == '__main__':
