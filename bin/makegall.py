@@ -17,7 +17,7 @@ help_message = '''
 makegall.py - Find jpg fnames in current dir and output basic gallery markup
 
 Options:
-    --inline    output markup to display images in the post 
+    --inline    output markup to display images in the post
                 (default is to have thumbnails)
     -h          this help message
 '''
@@ -45,14 +45,14 @@ def readRDF(fname):
     except:
         pass
     if description == coverage:
-        description = title + " - "+coverage
+        description = title + u" – "+coverage
     try:
         date = re.search(r'<s0:date>(.*)</s0:date>', rdf).group(1)
-        description = description + ". " + date
+        description = description + ", " + date
     except:
         pass
     return title, description
-    
+
 
 def main(argv=None):
     inline = False
@@ -63,35 +63,36 @@ def main(argv=None):
             opts, args = getopt.getopt(argv[1:], "h", ["help", "inline"])
         except getopt.error, msg:
             raise Usage(msg)
-    
+
         # option processing
         for option, value in opts:
             if option == "--inline":
                 inline = True
             if option in ("-h", "--help"):
                 raise Usage(help_message)
-    
+
     except Usage, err:
         print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
         print >> sys.stderr, "\t for help use --help"
         return 2
-    
+
     if inline:
         template_markup = '''<div class="picCenter picCaption">
-    <a href="%(fname)s" class="fresco" ><img src="%(fname)s" alt="%(alt_text)s" /></a>
-    <p>%(title_text)s</p>
+    <a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s"><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s" /></a>
+    <p><a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
 </div>'''
-    else: 
+    else:
         print '<div class="gall">'
         template_markup =  '''  <div class="gallone">
-        <a href="%(fname)s" class="fresco" 
-        data-fresco-group="gall" 
-        data-fresco-caption="%(title_text)s" 
+        <a href="%(fname)s" class="fresco"
+        data-fresco-group="gall"
+        data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'"
+        data-fresco-caption="%(title_text)s"
         title="%(title_text)s"
         data-fresco-options="thumbnail: 'tn/tn_%(fname)s.jpg'">
             <img src="tn/tn_%(fname)s.jpg" alt="%(alt_text)s"  />
         </a>
-        <p><a href="%(fname)s" class="fresco" 
+        <p><a href="%(fname)s" class="fresco"
         data-fresco-group="gall_text" >%(link_text)s</a></p>
     </div>'''
     dirList=os.listdir(".")
