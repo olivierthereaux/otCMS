@@ -17,10 +17,24 @@ help_message = '''
 makegall.py - Find jpg fnames in current dir and output basic gallery markup
 
 Options:
-    --inline    output markup to display images in the post
-                (default is to have thumbnails)
-    -h          this help message
+    --inline        output markup to display images in the post
+    --inline-lazy   output markup to display images in the post, with lazy load
+                    (default is to have thumbnails)
+    -h              this help message
 '''
+
+def getImageSizes(fname):
+    """calculate actual and relative dimensions of image"""
+    sizes = dict()
+    from PIL import Image
+    im=Image.open(fname)
+    (sizes["width"], sizes["height"]) = im.size
+    sizes["rel_width"] = 600
+    try:
+        sizes["rel_height"] = int((float(sizes["height"])*float(sizes["rel_width"]))/float(sizes["width"]))
+    except Exception as e:
+        raise e
+    return sizes
 
 
 def readRDF(fname):
@@ -32,16 +46,17 @@ def readRDF(fname):
         return "", ""
     title = ''
     description = ''
+    coverage = ''
     try:
-        title = re.search(r'<s0:title>(.*)</s0:title>', rdf).group(1)
+        title = re.search(r'<s[0-9]:title>(.*)</s[0-9]:title>', rdf).group(1)
     except Exception, e:
         pass
     try:
-        description = re.search(r'<s0:description>(.*)</s0:description>', rdf).group(1)
+        description = re.search(r'<s[0-9]:description>(.*)</s[0-9]:description>', rdf).group(1)
     except:
         pass
     try:
-        coverage = re.search(r'<s0:coverage>(.*)</s0:coverage>', rdf).group(1)
+        coverage = re.search(r'<s[0-9]:coverage>(.*)</s[0-9]:coverage>', rdf).group(1)
     except:
         pass
     if description == coverage:
@@ -56,11 +71,12 @@ def readRDF(fname):
 
 def main(argv=None):
     inline = False
+    inline_lazy = False
     if argv is None:
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help", "inline"])
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "inline", "inline-lazy"])
         except getopt.error, msg:
             raise Usage(msg)
 
@@ -68,6 +84,8 @@ def main(argv=None):
         for option, value in opts:
             if option == "--inline":
                 inline = True
+            if option == "--inline-lazy":
+                inline_lazy = True
             if option in ("-h", "--help"):
                 raise Usage(help_message)
 
@@ -79,6 +97,11 @@ def main(argv=None):
     if inline:
         template_markup = '''<div class="picCenter picCaption">
     <a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s"><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s" /></a>
+    <p><a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
+</div>'''
+    elif inline_lazy:
+        template_markup = '''<div class="picCenter picCaption">
+    <a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s"><img class="lazy" data-original="%(fname)s" width="%(rel_width)d" height="%(rel_height)d" alt="%(alt_text)s" title="%(link_text)s" /><noscript><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s"></img></noscript></a>
     <p><a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
 </div>'''
     else:
@@ -98,6 +121,7 @@ def main(argv=None):
     dirList=os.listdir(".")
     for fname in dirList:
         if re.search(r".jpg$", fname):
+            sizes = getImageSizes(fname)
             file_base = re.sub(r"\..*$", "", fname)
             alt_text = ''
             link_text = ''
@@ -108,8 +132,8 @@ def main(argv=None):
                 alt_text = "Photo: "+title
                 title_text = description
                 link_text = title
-            print template_markup % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text}
-    if not inline:
+            print template_markup % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text, "rel_width": sizes["rel_width"], "rel_height": sizes["rel_height"]}
+    if not inline and not inline_lazy:
         print '</div>'
 
 if __name__ == '__main__':
