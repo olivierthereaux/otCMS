@@ -29,11 +29,19 @@ def getImageSizes(fname):
     from PIL import Image
     im=Image.open(fname)
     (sizes["width"], sizes["height"]) = im.size
-    sizes["rel_width"] = 600
-    try:
-        sizes["rel_height"] = int((float(sizes["height"])*float(sizes["rel_width"]))/float(sizes["width"]))
-    except Exception as e:
-        raise e
+    if sizes["width"] >= sizes["height"]:
+        sizes["rel_width"] = 600
+        try:
+            sizes["rel_height"] = int((float(sizes["height"])*float(sizes["rel_width"]))/float(sizes["width"]))
+        except Exception as e:
+            raise e
+    else:
+        sizes["rel_height"] = 600
+        try:
+            sizes["rel_width"] = int((float(sizes["width"])*float(sizes["rel_height"]))/float(sizes["height"]))
+        except Exception as e:
+            raise e
+
     return sizes
 
 
