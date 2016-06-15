@@ -27,6 +27,11 @@
 	</div>
 ]]>
     </summary>
+    <content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+      ${entry.body}
+      </div>
+    </content>
   </entry>
 % endfor
 </feed>

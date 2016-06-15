@@ -40,7 +40,7 @@ def main(argv=None):
             opts, args = getopt.getopt(argv[1:], "hp", ["help", "noindex"])
         except getopt.error, msg:
             raise Usage(msg)
-    
+
         # option processing
         for option, value in opts:
             if option == "-p":
@@ -49,7 +49,7 @@ def main(argv=None):
                 indexes = False
             if option in ("-h", "--help"):
                 raise Usage(help_message)
-    
+
     except Usage, err:
         print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
         print >> sys.stderr, "\t for help use --help"
@@ -71,16 +71,16 @@ def main(argv=None):
             del sys.path[0]
     else:
         import otCMS
-    
-    # Parse the settings and load the entries catalog
-    entries, path = otCMS.loadcatalog(private=private)  
 
-    # This is where the web files should be found and written. 
+    # Parse the settings and load the entries catalog
+    entries, path = otCMS.loadcatalog(private=private)
+
+    # This is where the web files should be found and written.
     path = join(realpath(dirname(__file__)), path)
     if not exists(path):
         sys.exit(2)
 
-    
+
 
 
     # 1.  Preparation for date-based archives / index
@@ -105,34 +105,34 @@ def main(argv=None):
             yearly_selection[entry.year].append(entry)
             yearly_lang_selection[entry.language][entry.year].append(entry)
     for year in years:
-        yearly_all_html = yearly_all_html + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year} 
+        yearly_all_html = yearly_all_html + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year}
         yearly_selection_html[year] = selection_template.render_unicode(selection = yearly_selection[year])
         yearly_all_html = yearly_all_html + selection_template.render_unicode(selection = yearly_selection[year])
         if yearly_lang_selection['en'].has_key(year):
             if len(yearly_lang_selection['en'][year]) > 0:
-                yearly_lang_html['en'] = yearly_lang_html['en'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year} 
+                yearly_lang_html['en'] = yearly_lang_html['en'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year}
                 yearly_lang_html['en'] = yearly_lang_html['en']+ selection_template.render_unicode(selection = yearly_lang_selection['en'][year])
         if yearly_lang_selection['fr'].has_key(year):
             if len(yearly_lang_selection['fr'][year]) > 0:
-                yearly_lang_html['fr'] = yearly_lang_html['fr'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year} 
+                yearly_lang_html['fr'] = yearly_lang_html['fr'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year}
                 yearly_lang_html['fr'] = yearly_lang_html['fr']+ selection_template.render_unicode(selection = yearly_lang_selection['fr'][year])
-    
+
     # 2. Preparation for ocation based archives / index
     locations = list() # list of all locations. Should be alphabetically sorted
     location_types = dict() # dictionary of all locations per type (Continent, Country, etc)
     loc_selection = dict()  # dictionary of entries, per location
     loc_selection_html = dict() # HTML output
-    
+
     for entry in entries:
         # this is a bit of a dance in order to make the catalog flexible.
-        # it is possible for each catalog entry to have (or not have) values 
+        # it is possible for each catalog entry to have (or not have) values
         # for Continent, Country, State, Region, City or Location
         # and each of these may either be a string or a list
         if entry.continent != None:
             continents = list()
             if type(entry.continent) != type(list()):
                 continents.append(entry.continent)
-            else: 
+            else:
                 continents = entry.continent
             for continent in continents:
                 if continent not in locations:
@@ -151,7 +151,7 @@ def main(argv=None):
                     locations.append(country)
                     location_types[country] = "Country"
                     loc_selection[country] = list()
-                loc_selection[country].append(entry)  
+                loc_selection[country].append(entry)
         if entry.city != None:
             cities = list()
             if type(entry.city) != type(list()):
@@ -170,7 +170,7 @@ def main(argv=None):
                 states.append(entry.state)
             else:
                 states = entry.state
-            for state in states:        
+            for state in states:
                 if state not in locations:
                     locations.append(state)
                     location_types[state] = "State"
@@ -182,7 +182,7 @@ def main(argv=None):
                 regions.append(entry.region)
             else:
                 regions = entry.region
-            for region in regions:            
+            for region in regions:
                 if region not in locations:
                     locations.append(region)
                     location_types[region] = "Region"
@@ -194,7 +194,7 @@ def main(argv=None):
                 locs.append(entry.location)
             else:
                 locs = entry.location
-            for loc in locs:            
+            for loc in locs:
                 if loc not in locations:
                     locations.append(loc)
                     location_types[loc] = "Location"
@@ -215,7 +215,7 @@ def main(argv=None):
         if next:
             if next.year == None:
                 next = None
-            
+
         previous_html_block = selection_template.render_unicode(selection = [previous]) if previous else ''
         next_html_block = selection_template.render_unicode(selection = [next]) if next else ''
         mytemplate = mylookup.get_template("prevnext.html")
@@ -223,14 +223,14 @@ def main(argv=None):
             prevnext_html = ''
         else:
             prevnext_html = mytemplate.render_unicode(
-                                        previous_body= previous_html_block, 
-                                        next_body= next_html_block, 
+                                        previous_body= previous_html_block,
+                                        next_body= next_html_block,
                                         page_language = entry.language
                                         )
-                                        
+
         mytemplate = mylookup.get_template("nearby.html")
         nearby_list = list()
-        if entry.city != None:        
+        if entry.city != None:
             try:
                 nearby_list= nearby_list+loc_selection[entry.city]
                 nearby_list = sorted(set(nearby_list))
@@ -269,16 +269,16 @@ def main(argv=None):
 
         if len(nearby_list)>5:
             nearby_list=random.sample(nearby_list, 5)
-            
+
         nearby_html_block = selection_template.render_unicode(selection = nearby_list) if len(nearby_list)>0 else ''
         nearby_html = u''
         if nearby_list:
             nearby_html = mytemplate.render_unicode(
                                             nearby_body = nearby_html_block,
                                             page_language = entry.language
-                                            ) 
-                                            
-        
+                                            )
+
+
         source = entry.uri
         source = re.sub(r"^/", "", source)
         if re.search(r".*\.html$", source):
@@ -292,6 +292,7 @@ def main(argv=None):
             source = source+".md"
         source_fn = join(path, source)
         page_html = markdown2.markdown_path(source_fn)
+        page_html = page_html.replace("<p></div></p>", "</div>") # workaround for annoying markdown behavior
         entry.body = page_html
         dest_fn = join(path, dest)
         dest_fh = open(dest_fn, "w")
@@ -302,11 +303,11 @@ def main(argv=None):
             clean_abstract = re.sub('[<>]', '', clean_abstract)
         dest_fh.write( mytemplate.render_unicode(
                                         body= page_html,
-                                        title= entry.title,  
+                                        title= entry.title,
                                         page_type="Page",
                                         page_description = clean_abstract,
                                         page_language = entry.language,
-                                        prevnext_body = prevnext_html, 
+                                        prevnext_body = prevnext_html,
                                         nearby_body = nearby_html
                                         ).encode("utf-8") )
         dest_fh.close()
@@ -330,7 +331,7 @@ def main(argv=None):
         index = open(join(path, 'all.html.tmp'), 'w')
         index.write( mytemplate.render_unicode(
                                         yearly_entries=yearly_all_html,
-                                        title='Archives',  
+                                        title='Archives',
                                         page_type="Index",
                                         page_description = "",
                                         page_intro = u'',
@@ -347,7 +348,7 @@ def main(argv=None):
                 title= u"Archives: in English"
             else: #fr
                 title= u"Archives: en Français"
-            
+
             filename = "all_"+lang+'.html'
             filename_tmp = "all_"+lang+'.html.tmp'
             desc_template = mylookup.get_template("intro_"+lang+".html")
@@ -356,23 +357,23 @@ def main(argv=None):
             index = open(join(path, filename_tmp), 'w')
             index.write( mytemplate.render_unicode(
                                             yearly_entries=yearly_lang_html[lang],
-                                            title= title,  
+                                            title= title,
                                             page_type="Index",
                                             page_description = '',
                                             page_intro = desc_template.render_unicode(),
-                                            page_language = lang, 
+                                            page_language = lang,
                                             page_include_nav = None
                                             ).encode("utf-8") )
             os.rename(join(path, filename_tmp), join(path, filename))
 
 
-        # 4.2 Generate per-year archive pages 
+        # 4.2 Generate per-year archive pages
         for year in years:
             mytemplate = mylookup.get_template("index_generic.html")
             index = open(join(path, str(year), 'index.html.tmp'), 'w')
             index.write( mytemplate.render_unicode(
                                             entries=yearly_selection_html[year],
-                                            title='Archives: ' + str(year) ,  
+                                            title='Archives: ' + str(year) ,
                                             page_type="Index",
                                             intro = '',
                                             page_description = "",
@@ -400,18 +401,18 @@ def main(argv=None):
             geo_html = geo_html + geo_block_template.render_unicode(
                                             loctype= loctype, locations = reverse_loc_bytype[loctype]
                                             ).encode("utf-8")
-                                    
+
         index = open(join(path, "geo", 'index.html.tmp'), 'w')
         index.write( geo_index_template.render_unicode(
                                         entries= '',
-                                        title=u'Archives: Around the world',  
+                                        title=u'Archives: Around the world',
                                         page_type="Index",
                                         intro = geo_html,
                                         page_description = "",
                                         page_language = ""
                                         ).encode("utf-8") )
         os.rename(join(path, "geo", 'index.html.tmp'), join(path, "geo", 'index.html'))
-    
+
         # 4.4 Generate individual geo pages
         for loc_name in locations:
             loc = re.sub (" ", "_", loc_name.lower())
@@ -421,7 +422,7 @@ def main(argv=None):
             index = open(join(path, "geo", loc+'.html.tmp'), 'w')
             index.write( mytemplate.render_unicode(
                                             entries= loc_selection_html[loc],
-                                            title=u'Entries in ' + location_types[loc_name] +": "+ loc_name,  
+                                            title=u'Entries in ' + location_types[loc_name] +": "+ loc_name,
                                             page_type="Index",
                                             intro = '',
                                             page_description = "",
@@ -430,7 +431,7 @@ def main(argv=None):
             os.rename(join(path, "geo", loc+'.html.tmp'), join(path, "geo", loc+'.html'))
 
 
-        # 5. Generate the Home Page 
+        # 5. Generate the Home Page
 
         latest_selection=entries[0:4]
         entries_featurable = list()
@@ -448,9 +449,9 @@ def main(argv=None):
 
 
         index.write( mytemplate.render_unicode(
-                                        latest_selection=latest_selection_html, 
-                                        random_selection=random_selection_html, 
-                                        title=title, page_description=page_description, 
+                                        latest_selection=latest_selection_html,
+                                        random_selection=random_selection_html,
+                                        title=title, page_description=page_description,
                                         page_type=page_type,
                                         page_language = ""
                                         ).encode("utf-8") )
@@ -458,22 +459,19 @@ def main(argv=None):
         index.close()
         os.rename(join(path, 'index.html.tmp'), join(path, 'index.html'))
 
-        # 5. Generate the Atom Feed 
+        # 5. Generate the Atom Feed
 
         atom_selection=entries[0:20]
         mytemplate = mylookup.get_template("atom.xml")
         index = open(join(path, 'atom.xml.tmp'), 'w')
         latest_pubdate = atom_selection[0].pubdate
-        
+
         index.write( mytemplate.render_unicode(
-                                        atom_selection=atom_selection, 
+                                        atom_selection=atom_selection,
                                         latest_pubdate=latest_pubdate
                                         ).encode("utf-8") )
         index.close()
         os.rename(join(path, 'atom.xml.tmp'), join(path, 'atom.xml'))
-        
+
 if __name__ == "__main__":
     sys.exit(main())
-
-
-
