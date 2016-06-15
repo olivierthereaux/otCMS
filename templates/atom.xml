@@ -27,13 +27,6 @@
 </div>
 ]]>
 </summary>
-  <content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
-    <article>
-    % if entry.thumbnail != None:
-      <figure><img src="${entry.thumbnail}" alt=""></img></figure>
-      % endif
-${entry.body}
-    </article></div></content>
   </entry>
 % endfor
 </feed>
