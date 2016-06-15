@@ -16,22 +16,24 @@
     <link href="http://olivier.thereaux.net/${entry.uri}"/>
     <published>${entry.pubdate}</published>
 	<updated>${entry.pubdate}</updated>
-    <summary type="html" xml:lang="en"><![CDATA[
-    <div class="entry">
-  % if entry.thumbnail != None:
-    <div class="thumb"><a href="${entry.uri}"><img src="${entry.thumbnail}" alt="" /></a></div>
-  % endif
-  % if entry.abstract != None:
-    <p class="entry_preview">${entry.abstract}</p>
-  % endif
-	</div>
+  <summary type="html" xml:lang="en"><![CDATA[
+<div class="entry">
+% if entry.thumbnail != None:
+<div class="thumb"><a href="${entry.uri}"><img src="${entry.thumbnail}" alt="" /></a></div>
+% endif
+% if entry.abstract != None:
+<p class="entry_preview">${entry.abstract}</p>
+% endif
+</div>
 ]]>
-    </summary>
-    <content type="xhtml">
-			<div xmlns="http://www.w3.org/1999/xhtml">
-      ${entry.body}
-      </div>
-    </content>
+</summary>
+  <content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
+    <article>
+    % if entry.thumbnail != None:
+      <figure><img src="${entry.thumbnail}" alt=""></img></figure>
+      % endif
+${entry.body}
+    </article></div></content>
   </entry>
 % endfor
 </feed>
