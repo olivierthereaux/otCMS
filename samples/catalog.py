@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
-
 # Your entries. Add newer ones at the top.
-entries = [    
+[
 
     {
         "URI": "/2013/01-Foo-bar/",

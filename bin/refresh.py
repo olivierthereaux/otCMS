@@ -17,29 +17,53 @@ import time
 from os.path import join, dirname, exists, realpath
 import markdown2
 
-help_message = '''
+# The library in ../lib/otCMS.py has some classes and helpers to manage entries
+source_tree_otCMS = realpath(join(dirname(__file__), "..", "lib", "otCMS.py"))
+if exists(source_tree_otCMS):
+    sys.path.insert(0, dirname(source_tree_otCMS))
+    try:
+        import otCMS
+    finally:
+        del sys.path[0]
+else:
+    import otCMS
+
+
+
+def usage():
+    print('''
 refresh.py - regenerate entries and indexes
+
+Usage: refresh.py [Options]
+
+Optional
+
 Options:
-    -p      use the private catalog
-    -h      this help message
-'''
+    --catalog   set path for entries catalog.
+                By default, will look for "catalog.py" in current directory
+      ... or "private.py" if option "-p" is set (see below)
+    --htdocs    set path for where the entries should be generated
+                By default, will consider path of catalog file to be the root
+    -p          use  private catalog.
+                Will only generate entries, no indexes
+    -h (--help) This help message
+''')
+    sys.exit(2)
 
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
 
 
 def main(argv=None):
     private = False
-    indexes = True
+    catalog_path =  realpath(os.path.curdir) # by default
+    htdocs = None
+    catalog = None
     if argv is None:
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "hp", ["help", "noindex"])
-        except getopt.error, msg:
-            raise Usage(msg)
+            opts, args = getopt.getopt(argv[1:], "hp", ["help", "catalog=", "htdocs="])
+        except getopt.error as msg:
+            usage()
 
         # option processing
         for option, value in opts:
@@ -48,12 +72,63 @@ def main(argv=None):
             if option == "--noindex":
                 indexes = False
             if option in ("-h", "--help"):
-                raise Usage(help_message)
+                usage()
+            if option == "--catalog":
+                catalog = value
+            if option == "--htdocs":
+                htdocs = realpath(value)
 
-    except Usage, err:
-        print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
-        print >> sys.stderr, "\t for help use --help"
-        return 2
+    except Exception as e:
+        print(e)
+        usage()
+
+
+
+    # Try loading catalog
+    if catalog: # specified by user
+        catalog = join(catalog_path, catalog)
+        if not os.path.isfile(catalog):
+            help_message = "could not find catalog file %s" % catalog
+            usage()
+
+    else: #not specified by user
+        try:
+            catalog_path = realpath(os.path.curdir)
+            while catalog_path != "/" and not catalog:
+                if private:
+                    catalog = join(catalog_path, "private.py")
+                else:
+                    catalog = join(catalog_path, "catalog.py")
+                # print("Trying to open default catalog file %s" % catalog)
+                if os.path.isfile(catalog):
+                    print("Found default catalog file %s" % catalog)
+                else:
+                    catalog = None
+                    catalog_path = realpath(join(catalog_path, ".."))
+            if not os.path.isfile(catalog):
+                print("Error: could not find defaut catalog file %s" % catalog)
+                usage()
+        except Exception as e:
+            print(e)
+            usage()
+
+    try:
+        entries = otCMS.otCMSCatalog()
+        entries.fromfile(catalog)
+        print("Catalog read successfully. %d entries loaded" % len(entries))
+    except Exception as e:
+        print(e)
+        usage()
+
+    if htdocs: #specified by user
+        if os.path.exists(htdocs):
+            pass
+        else:
+            print("Error: could not find root path for htdocs: %s" % htdocs)
+            usage()
+    else:
+        htdocs=catalog_path
+    print("Writing files with %s as htdocs root directory" % htdocs)
 
     # Setup template engine, path is known relative to the script
     from mako.template import Template
@@ -61,39 +136,18 @@ def main(argv=None):
     mylookup = TemplateLookup(directories=[join(dirname(__file__), "..", "templates")], output_encoding='utf-8', encoding_errors='replace')
     selection_template = mylookup.get_template("list_entry.html") # template for list of entries, used throughout
 
-    # The library in ../lib/otCMS.py has some classes and helpers to manage entries
-    source_tree_otCMS = join(dirname(__file__), "..", "lib", "otCMS.py")
-    if exists(source_tree_otCMS):
-        sys.path.insert(0, dirname(source_tree_otCMS))
-        try:
-            import otCMS
-        finally:
-            del sys.path[0]
-    else:
-        import otCMS
-
-    # Parse the settings and load the entries catalog
-    entries, path = otCMS.loadcatalog(private=private)
-
-    # This is where the web files should be found and written.
-    path = join(realpath(dirname(__file__)), path)
-    if not exists(path):
-        sys.exit(2)
-
-
-
 
     # 1.  Preparation for date-based archives / index
     years = list() # list of all years where there are entries
     yearly_selection = dict() # dict of entries per year
-    yearly_all_html = u'' # html block with all entries, per year
+    yearly_all_html = '' # html block with all entries, per year
     yearly_selection_html = dict() # dictionary of html block, per year
     yearly_lang_selection = dict()
     yearly_lang_selection['en'] = dict()
     yearly_lang_selection['fr'] = dict()
     yearly_lang_html = dict()
-    yearly_lang_html['en'] = u''
-    yearly_lang_html['fr'] = u''
+    yearly_lang_html['en'] = ''
+    yearly_lang_html['fr'] = ''
 
     for entry in entries:
         if entry.year != None:
@@ -108,11 +162,11 @@ def main(argv=None):
         yearly_all_html = yearly_all_html + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year}
         yearly_selection_html[year] = selection_template.render_unicode(selection = yearly_selection[year])
         yearly_all_html = yearly_all_html + selection_template.render_unicode(selection = yearly_selection[year])
-        if yearly_lang_selection['en'].has_key(year):
+        if year in yearly_lang_selection['en']:
             if len(yearly_lang_selection['en'][year]) > 0:
                 yearly_lang_html['en'] = yearly_lang_html['en'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year}
                 yearly_lang_html['en'] = yearly_lang_html['en']+ selection_template.render_unicode(selection = yearly_lang_selection['en'][year])
-        if yearly_lang_selection['fr'].has_key(year):
+        if year in yearly_lang_selection['fr']:
             if len(yearly_lang_selection['fr'][year]) > 0:
                 yearly_lang_html['fr'] = yearly_lang_html['fr'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year}
                 yearly_lang_html['fr'] = yearly_lang_html['fr']+ selection_template.render_unicode(selection = yearly_lang_selection['fr'][year])
@@ -271,7 +325,7 @@ def main(argv=None):
             nearby_list=random.sample(nearby_list, 5)
 
         nearby_html_block = selection_template.render_unicode(selection = nearby_list) if len(nearby_list)>0 else ''
-        nearby_html = u''
+        nearby_html = ''
         if nearby_list:
             nearby_html = mytemplate.render_unicode(
                                             nearby_body = nearby_html_block,
@@ -290,11 +344,11 @@ def main(argv=None):
         else:
             dest = source+".html"
             source = source+".md"
-        source_fn = join(path, source)
+        source_fn = join(htdocs, source)
         page_html = markdown2.markdown_path(source_fn)
         page_html = page_html.replace("<p></div></p>", "</div>") # workaround for annoying markdown behavior
         entry.body = page_html
-        dest_fn = join(path, dest)
+        dest_fn = join(htdocs, dest)
         dest_fh = open(dest_fn, "w")
         mytemplate = mylookup.get_template("page.html")
         tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
@@ -309,52 +363,52 @@ def main(argv=None):
                                         page_language = entry.language,
                                         prevnext_body = prevnext_html,
                                         nearby_body = nearby_html
-                                        ).encode("utf-8") )
+                                        ))
         dest_fh.close()
         if re.search(r"index", source):
             rdf = re.sub(r"index\..*", "", source)+"meta.rdf"
-            rdf_fn = join(path, rdf)
+            rdf_fn = join(htdocs, rdf)
             rdf_fh = open(rdf_fn, "w")
             mytemplate = mylookup.get_template("meta.rdf")
             rdf_fh.write( mytemplate.render_unicode(
                                             uri= entry.uri,
-                                            title= entry.title).encode("utf-8") )
+                                            title= entry.title) )
             rdf_fh.close()
 
 
     # 4. Generate archives pages
 
-    if private == False and indexes == True: # do not generate archives and indexes for private entries
+    if private == False: # do not generate archives and indexes for private entries
 
         # 4.1 Generate full archive
         mytemplate = mylookup.get_template("index_all.html")
-        index = open(join(path, 'all.html.tmp'), 'w')
+        index = open(join(htdocs, 'all.html.tmp'), 'w')
         index.write( mytemplate.render_unicode(
                                         yearly_entries=yearly_all_html,
                                         title='Archives',
                                         page_type="Index",
                                         page_description = "",
-                                        page_intro = u'',
+                                        page_intro = '',
                                         page_language = "",
                                         page_include_nav = 1
-                                        ).encode("utf-8") )
-        os.rename(join(path, 'all.html.tmp'), join(path, 'all.html'))
+                                        ))
+        os.rename(join(htdocs, 'all.html.tmp'), join(htdocs, 'all.html'))
 
 
 
         # 4.1 Generate lang-based archive
         for lang in ['en', 'fr']:
             if lang == 'en':
-                title= u"Archives: in English"
+                title= "Archives: in English"
             else: #fr
-                title= u"Archives: en Français"
+                title= "Archives: en Français"
 
             filename = "all_"+lang+'.html'
             filename_tmp = "all_"+lang+'.html.tmp'
             desc_template = mylookup.get_template("intro_"+lang+".html")
             desc_template.render_unicode()
             mytemplate = mylookup.get_template("index_all.html")
-            index = open(join(path, filename_tmp), 'w')
+            index = open(join(htdocs, filename_tmp), 'w')
             index.write( mytemplate.render_unicode(
                                             yearly_entries=yearly_lang_html[lang],
                                             title= title,
@@ -363,14 +417,14 @@ def main(argv=None):
                                             page_intro = desc_template.render_unicode(),
                                             page_language = lang,
                                             page_include_nav = None
-                                            ).encode("utf-8") )
-            os.rename(join(path, filename_tmp), join(path, filename))
+                                            ) )
+            os.rename(join(htdocs, filename_tmp), join(htdocs, filename))
 
 
         # 4.2 Generate per-year archive pages
         for year in years:
             mytemplate = mylookup.get_template("index_generic.html")
-            index = open(join(path, str(year), 'index.html.tmp'), 'w')
+            index = open(join(htdocs, str(year), 'index.html.tmp'), 'w')
             index.write( mytemplate.render_unicode(
                                             entries=yearly_selection_html[year],
                                             title='Archives: ' + str(year) ,
@@ -378,11 +432,11 @@ def main(argv=None):
                                             intro = '',
                                             page_description = "",
                                             page_language = ""
-                                            ).encode("utf-8") )
-            os.rename(join(path, str(year), 'index.html.tmp'), join(path, str(year), 'index.html'))
+                                            ) )
+            os.rename(join(htdocs, str(year), 'index.html.tmp'), join(htdocs, str(year), 'index.html'))
 
         # 4.3 Generate main /geo index
-        geo_html = u''
+        geo_html = ''
         reverse_loc_bytype = dict()
         geo_index_template = mylookup.get_template("index_generic.html")
         geo_block_template = mylookup.get_template("list_location.html")
@@ -400,18 +454,18 @@ def main(argv=None):
         for loctype in ['Continent', 'Country', 'Region', 'State', 'City', 'Location']:
             geo_html = geo_html + geo_block_template.render_unicode(
                                             loctype= loctype, locations = reverse_loc_bytype[loctype]
-                                            ).encode("utf-8")
+                                            )
 
-        index = open(join(path, "geo", 'index.html.tmp'), 'w')
+        index = open(join(htdocs, "geo", 'index.html.tmp'), 'w')
         index.write( geo_index_template.render_unicode(
                                         entries= '',
-                                        title=u'Archives: Around the world',
+                                        title='Archives: Around the world',
                                         page_type="Index",
                                         intro = geo_html,
                                         page_description = "",
                                         page_language = ""
-                                        ).encode("utf-8") )
-        os.rename(join(path, "geo", 'index.html.tmp'), join(path, "geo", 'index.html'))
+                                        ) )
+        os.rename(join(htdocs, "geo", 'index.html.tmp'), join(htdocs, "geo", 'index.html'))
 
         # 4.4 Generate individual geo pages
         for loc_name in locations:
@@ -419,16 +473,16 @@ def main(argv=None):
             loc = re.sub (",", "", loc)
             loc_selection_html[loc] = selection_template.render_unicode(selection = loc_selection[loc_name])
             mytemplate = mylookup.get_template("index_generic.html")
-            index = open(join(path, "geo", loc+'.html.tmp'), 'w')
+            index = open(join(htdocs, "geo", loc+'.html.tmp'), 'w')
             index.write( mytemplate.render_unicode(
                                             entries= loc_selection_html[loc],
-                                            title=u'Entries in ' + location_types[loc_name] +": "+ loc_name,
+                                            title='Entries in ' + location_types[loc_name] +": "+ loc_name,
                                             page_type="Index",
                                             intro = '',
                                             page_description = "",
                                             page_language = ""
-                                            ).encode("utf-8") )
-            os.rename(join(path, "geo", loc+'.html.tmp'), join(path, "geo", loc+'.html'))
+                                            ) )
+            os.rename(join(htdocs, "geo", loc+'.html.tmp'), join(htdocs, "geo", loc+'.html'))
 
 
         # 5. Generate the Home Page
@@ -441,11 +495,11 @@ def main(argv=None):
         random_selection=random.sample(entries_featurable, 4)
         latest_selection_html = selection_template.render_unicode(selection = latest_selection)
         random_selection_html = selection_template.render_unicode(selection = random_selection)
-        title= u"2 Neurones &amp; 1 Camera - by @olivierthereaux"
-        page_description = u'Travelogue, street photography, a bit of poetry, and the simple pleasure of telling stories. Around the world, from Europe to Japan, from Paris to London via Tokyo and Montreal'
+        title= "2 Neurones &amp; 1 Camera - by @olivierthereaux"
+        page_description = 'Travelogue, street photography, a bit of poetry, and the simple pleasure of telling stories. Around the world, from Europe to Japan, from Paris to London via Tokyo and Montreal'
         page_type = "Home"
         mytemplate = mylookup.get_template("index_main.html")
-        index = open(join(path, 'index.html.tmp'), 'w')
+        index = open(join(htdocs, 'index.html.tmp'), 'w')
 
 
         index.write( mytemplate.render_unicode(
@@ -454,24 +508,24 @@ def main(argv=None):
                                         title=title, page_description=page_description,
                                         page_type=page_type,
                                         page_language = ""
-                                        ).encode("utf-8") )
+                                        ) )
 
         index.close()
-        os.rename(join(path, 'index.html.tmp'), join(path, 'index.html'))
+        os.rename(join(htdocs, 'index.html.tmp'), join(htdocs, 'index.html'))
 
         # 5. Generate the Atom Feed
 
         atom_selection=entries[0:20]
         mytemplate = mylookup.get_template("atom.xml")
-        index = open(join(path, 'atom.xml.tmp'), 'w')
+        index = open(join(htdocs, 'atom.xml.tmp'), 'w')
         latest_pubdate = atom_selection[0].pubdate
 
         index.write( mytemplate.render_unicode(
                                         atom_selection=atom_selection,
                                         latest_pubdate=latest_pubdate
-                                        ).encode("utf-8") )
+                                        ) )
         index.close()
-        os.rename(join(path, 'atom.xml.tmp'), join(path, 'atom.xml'))
+        os.rename(join(htdocs, 'atom.xml.tmp'), join(htdocs, 'atom.xml'))
 
 if __name__ == "__main__":
     sys.exit(main())

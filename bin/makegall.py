@@ -49,7 +49,7 @@ def readRDF(fname):
     """Yes, this is how I parse my PhotoRDF. Sue me."""
     try:
         rdf = open(fname, "r").read()
-    except Exception, e:
+    except Exception as e:
         raise e
         return "", ""
     title = ''
@@ -57,7 +57,7 @@ def readRDF(fname):
     coverage = ''
     try:
         title = re.search(r'<s[0-9]:title>(.*)</s[0-9]:title>', rdf).group(1)
-    except Exception, e:
+    except Exception as e:
         pass
     try:
         description = re.search(r'<s[0-9]:description>(.*)</s[0-9]:description>', rdf).group(1)
@@ -68,7 +68,7 @@ def readRDF(fname):
     except:
         pass
     if description == coverage:
-        description = title + u" – "+coverage
+        description = title + " – "+coverage
     try:
         date = re.search(r'<s0:date>(.*)</s0:date>', rdf).group(1)
         description = description + ", " + date
@@ -85,7 +85,7 @@ def main(argv=None):
     try:
         try:
             opts, args = getopt.getopt(argv[1:], "h", ["help", "inline", "inline-lazy"])
-        except getopt.error, msg:
+        except getopt.error as msg:
             raise Usage(msg)
 
         # option processing
@@ -97,9 +97,9 @@ def main(argv=None):
             if option in ("-h", "--help"):
                 raise Usage(help_message)
 
-    except Usage, err:
-        print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
-        print >> sys.stderr, "\t for help use --help"
+    except Usage as err:
+        print(sys.argv[0].split("/")[-1] + ": " + str(err.msg), file=sys.stderr)
+        print("\t for help use --help", file=sys.stderr)
         return 2
 
     if inline:
@@ -113,7 +113,7 @@ def main(argv=None):
     <p><a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
 </div>'''
     else:
-        print '<div class="gall">'
+        print('<div class="gall">')
         template_markup =  '''  <div class="gallone">
         <a href="%(fname)s" class="fresco"
         data-fresco-group="gall"
@@ -140,9 +140,9 @@ def main(argv=None):
                 alt_text = "Photo: "+title
                 title_text = description
                 link_text = title
-            print template_markup % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text, "rel_width": sizes["rel_width"], "rel_height": sizes["rel_height"]}
+            print(template_markup % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text, "rel_width": sizes["rel_width"], "rel_height": sizes["rel_height"]})
     if not inline and not inline_lazy:
-        print '</div>'
+        print('</div>')
 
 if __name__ == '__main__':
     main()

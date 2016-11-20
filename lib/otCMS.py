@@ -20,16 +20,17 @@ import unittest
 import re
 import markdown2
 from os.path import join, dirname, exists
+import ast
 
 
 class otCMS:
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
 
 class otCMSTests(unittest.TestCase):
-	def setUp(self):
-		pass
+    def setUp(self):
+        pass
 
 class otCMSLocation(object):
     """Location (continent, country, etc) CMS"""
@@ -39,7 +40,7 @@ class otCMSLocation(object):
 
     def __init__(self):
         super(otCMSLocation, self).__init__()
-    
+
 
 class otCMSEntry(object):
     """Entry (post, page) in the CMS"""
@@ -58,48 +59,48 @@ class otCMSEntry(object):
     location = None
     body = None
     language = None
-    
+
     def __init__(self):
         super(otCMSEntry, self).__init__()
 
     def parameters():
         return ['uri', 'title', 'language','pubdate', 'pubdate_human', 'photos', 'abstract', 'year', 'continent', 'country', 'city', 'region', 'state', 'location', 'body']
-    
+
     def __eq__(self, other):
         return self.uri == other.uri
-    
+
     def fromdict(self, dict_entry):
-        if dict_entry.has_key("URI"):
+        if "URI" in dict_entry:
             self.uri = dict_entry["URI"]
-        if dict_entry.has_key("Title"):
+        if "Title" in dict_entry:
             self.title = dict_entry["Title"]
-        if dict_entry.has_key("Thumbnail"):
+        if "Thumbnail" in dict_entry:
             self.thumbnail = dict_entry["Thumbnail"]
-        if dict_entry.has_key("Pubdate"):
+        if "Pubdate" in dict_entry:
             self.pubdate = dict_entry["Pubdate"]
             if self.pubdate != None:
                 self.pubdate_human = re.sub(r"T.*", "", self.pubdate)
-        if dict_entry.has_key("Photos"):
+        if "Photos" in dict_entry:
             self.photos = dict_entry["Photos"]
-        if dict_entry.has_key("Abstract"):
+        if "Abstract" in dict_entry:
             self.abstract = dict_entry["Abstract"]
-        if dict_entry.has_key("Language"):
+        if "Language" in dict_entry:
             self.language = dict_entry["Language"]
-        if dict_entry.has_key("Year"):
+        if "Year" in dict_entry:
             self.year = dict_entry["Year"]
-        if dict_entry.has_key("Continent"):
+        if "Continent" in dict_entry:
             self.continent = dict_entry["Continent"]
-        if dict_entry.has_key("Country"):
+        if "Country" in dict_entry:
             self.country = dict_entry["Country"]
-        if dict_entry.has_key("City"):
+        if "City" in dict_entry:
             self.city = dict_entry["City"]
-        if dict_entry.has_key("Region"):
+        if "Region" in dict_entry:
             self.region = dict_entry["Region"]
-        if dict_entry.has_key("State"):
+        if "State" in dict_entry:
             self.state = dict_entry["State"]
-        if dict_entry.has_key("Location"):
+        if "Location" in dict_entry:
             self.location = dict_entry["Location"]
-        if dict_entry.has_key("Body"):
+        if "Body" in dict_entry:
             self.body = dict_entry["Body"].decode("utf-8")
 
     def todict(self):
@@ -142,29 +143,25 @@ class otCMSEntry(object):
 
     def __unicode__(self):
         # return u"%r" % self.__dict__
-        return u"%r" % self.todict()
+        return "%r" % self.todict()
 
     def __str__(self):
         return "%r" % self.todict()
 
-def loadcatalog(private):
-    entries = list()
-    path = "./"
-    settings = join(dirname(__file__), "..", "config", "settings.py")
-    exec(open(settings,"rb").read())
-    catalog = ''
-    if private == True:
-        catalog = join(dirname(__file__), private_catalog)
-    else:
-        catalog = join(dirname(__file__), public_catalog)
-    exec(open(catalog,"rb").read())
-    converted_entries = list()
-    for entry in entries:
-        cms_entry = otCMSEntry()
-        cms_entry.fromdict(entry)
-        converted_entries.append(cms_entry)
-    return converted_entries, path
-        
+class otCMSCatalog(list):
+    def __init__(self):
+        super(otCMSCatalog, self).__init__()
+
+    def fromfile(self, catalog_path):
+        entries=list()
+        with open(catalog_path,"r") as catalog_fh:
+            s = catalog_fh.read()
+            entries = ast.literal_eval(s)
+        for entry in entries:
+            cms_entry = otCMSEntry()
+            cms_entry.fromdict(entry)
+            self.append(cms_entry)
+
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()

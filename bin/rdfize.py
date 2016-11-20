@@ -13,7 +13,7 @@ import os
 import re
 
 def main():
-    rdf_template = u"""<?xml version='1.0' encoding='utf-8'?>
+    rdf_template = """<?xml version='1.0' encoding='utf-8'?>
       <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
           xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#"
           xmlns:s0="http://www.w3.org/2000/PhotoRDF/dc-1-0#"
@@ -30,39 +30,39 @@ def main():
         </rdf:Description>
       </rdf:RDF>
     """
-    album_location = raw_input('Location?    ')
-    album_date = raw_input('Date?    ')
+    album_location = input('Location?    ')
+    album_date = input('Date?    ')
     dirList=os.listdir(".")
     for fname_img in dirList:
         if re.search(r".jpg$", fname_img):
             fname_rdf = re.sub(".jpg", ".rdf", fname_img)
-            print(u"\nProcessing %s…" % fname_img)
+            print(("\nProcessing %s…" % fname_img))
             infer_title = fname_img
             infer_title = re.sub("_", " ", infer_title)
             infer_title = re.sub("\d+-", "", infer_title)
             infer_title = re.sub(".jpg", "", infer_title)
             infer_title = re.sub(r"[0-9-]+$", "", infer_title)
-            input_title = raw_input('Title? (Default: %s)    ' % infer_title)
+            input_title = input('Title? (Default: %s)    ' % infer_title)
             if input_title == "":
                 input_title = infer_title
-            input_location = raw_input('Location? (Default: %s)    ' % album_location)
+            input_location = input('Location? (Default: %s)    ' % album_location)
             if input_location == "":
                 input_location = album_location
-            input_date = raw_input('Date? (Default: %s)    ' % album_date)
+            input_date = input('Date? (Default: %s)    ' % album_date)
             if input_date == "":
                 input_date = album_date
-            input_desc = raw_input('Description? (Default: %s) ' % input_title)
-            delimiter = u" "
+            input_desc = input('Description? (Default: %s) ' % input_title)
+            delimiter = " "
             if input_desc == "":
                 input_desc = input_title
             if (len(input_desc) != 0):
-                if (input_desc[-1] != u"."):
-                    delimiter = u" – "
+                if (input_desc[-1] != "."):
+                    delimiter = " – "
                     
-            rdf_text = rdf_template % {"TITLE": input_title.decode("utf-8"), "LOCATION": input_location.decode("utf-8"), 
-            "DATE": input_date.decode("utf-8"), "DESCRIPTION": input_desc.decode("utf-8"), "DELIMITER": delimiter}
+            rdf_text = rdf_template % {"TITLE": input_title, "LOCATION": input_location, 
+            "DATE": input_date, "DESCRIPTION": input_desc, "DELIMITER": delimiter}
             file_rdf = open(fname_rdf, 'w')
-            file_rdf.write(rdf_text.encode("utf-8"))
+            file_rdf.write(rdf_text)
             file_rdf.close()
 
 if __name__ == "__main__":
