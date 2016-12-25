@@ -104,13 +104,13 @@ def main(argv=None):
 
     if inline:
         template_markup = '''<div class="picCenter picCaption">
-    <a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s"><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s" /></a>
-    <p><a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
+    <a href="%(fname)s" class="fresco" data-fresco-group="inline" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s"><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s" /></a>
+    <p><a href="%(fname)s" class="fresco" data-fresco-group="inline-text" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
 </div>'''
     elif inline_lazy:
         template_markup = '''<div class="picCenter picCaption">
-    <a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s"><img class="lazy" data-original="%(fname)s" width="%(rel_width)d" height="%(rel_height)d" alt="%(alt_text)s" title="%(link_text)s" /><noscript><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s"></img></noscript></a>
-    <p><a href="%(fname)s" class="fresco" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
+    <a href="%(fname)s" class="fresco" data-fresco-group="inline" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s"><img class="lazy" data-original="%(fname)s" width="%(rel_width)d" height="%(rel_height)d" alt="%(alt_text)s" title="%(link_text)s" /><noscript><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s"></img></noscript></a>
+    <p><a href="%(fname)s" class="fresco" data-fresco-group="inline-text" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
 </div>'''
     else:
         print('<div class="gall">')
