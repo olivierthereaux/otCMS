@@ -320,7 +320,16 @@ def main(argv=None):
         #         nearby_list.remove(entry)
         #     except:
         #         pass
-
+        if len(nearby_list)> 0:
+            nearby_list_dedup = list()
+            nearby_list_dedup_index = list()
+            for nearby_entry in nearby_list:
+                if nearby_entry.uri in nearby_list_dedup_index:
+                    pass
+                else:
+                    nearby_list_dedup_index.append(nearby_entry.uri)
+                    nearby_list_dedup.append(nearby_entry)
+            nearby_list = nearby_list_dedup
         if len(nearby_list)>5:
             nearby_list=random.sample(nearby_list, 5)
 
