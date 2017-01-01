@@ -4,10 +4,10 @@ do
   if echo "$i" | grep -v tn_ | grep -v "\.html" | grep -v "\.sh" | grep -v "\.rdf" | grep -v "\.md" | grep -v "\.php" | grep -q "\."
   then
     failed=0
+    echo -n "-> tn/lg_$i.jpg "
+    convert "$i"  -thumbnail 500x500^ -gravity center -extent 500x500 "tn/lg_$i".jpg 2>&1 > /dev/null
     echo -n "$i -> tn/tn_$i.jpg : "
-    # convert -quality 100 "$i" -thumbnail '200x200>'  "tn/tn_$i".jpg 2>&1 > /dev/null
-    # 2013-03 - square crop, slightly larger
-      convert "$i"  -thumbnail 250x250^ -gravity center -extent 250x250 "tn/tn_$i".jpg 2>&1 > /dev/null
+    convert "$i"  -thumbnail 250x250^ -gravity center -extent 250x250 "tn/tn_$i".jpg 2>&1 > /dev/null
 
     if [ ! -r "tn/tn_$i.jpg" ]
     then
