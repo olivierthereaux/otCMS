@@ -16,6 +16,7 @@ import cgi
 import time
 from os.path import join, dirname, exists, realpath
 import markdown2
+from feedgen.feed import FeedGenerator
 
 # The library in ../lib/otCMS.py has some classes and helpers to manage entries
 source_tree_otCMS = realpath(join(dirname(__file__), "..", "lib", "otCMS.py"))
@@ -324,7 +325,9 @@ def main(argv=None):
             nearby_list_dedup = list()
             nearby_list_dedup_index = list()
             for nearby_entry in nearby_list:
-                if nearby_entry.uri in nearby_list_dedup_index:
+                if nearby_entry.uri == entry.uri:
+                    pass
+                elif nearby_entry.uri in nearby_list_dedup_index:
                     pass
                 else:
                     nearby_list_dedup_index.append(nearby_entry.uri)
@@ -525,16 +528,65 @@ def main(argv=None):
         # 5. Generate the Atom Feed
 
         atom_selection=entries[0:20]
-        mytemplate = mylookup.get_template("atom.xml")
-        index = open(join(htdocs, 'atom.xml.tmp'), 'w')
-        latest_pubdate = atom_selection[0].pubdate
+        fg = FeedGenerator()
+        fg.id('tag:olivier.thereaux.net,2000:1337')
+        fg.title('2 Neurones and 1 Camera')
+        # fg.author( {'name':'Olivier Thereaux','uri':'http://olivier.thereaux.net/contact'} )
+        fg.author( {'name':'Olivier Thereaux'} )
+        fg.link( href='http://olivier.thereaux.net/', rel='alternate' )
+        fg.subtitle('Olivier Thereaux')
+        fg.link( href='http://olivier.thereaux.net/atom.xml', rel='self' )
 
-        index.write( mytemplate.render_unicode(
-                                        atom_selection=atom_selection,
-                                        latest_pubdate=latest_pubdate
-                                        ) )
-        index.close()
+        for entry in atom_selection:
+            fe = fg.add_entry()
+            fe.updated(entry.pubdate)
+            entry_id = "http://olivier.thereaux.net"+entry.uri
+            fe.published(entry.pubdate)
+            fe.id(entry_id)
+            fe.author( {'name':'Olivier Thereaux'} )
+            entry_link = {"rel": "alternate", "type":"text/html", "href": "http://olivier.thereaux.net"+entry.uri}
+            fe.link(entry_link)
+            fe.title(entry.title)
+
+            if entry.abstract:
+                fe.summary(entry.abstract)
+            if entry.abstract:
+                entry_content = '<p>%s</p>' % entry.abstract
+                if entry.language == "fr":
+                    if entry.photos != None:
+                        entry_content =entry_content +'<p><a href="%s">À suivre / %s photos</a></p>' % (entry_id, entry.photos)
+                    else:
+                        entry_content =entry_content +'<p><a href="%s">À suivre</a></p>' % entry_id
+                else:
+                    if entry.photos != None:
+                        entry_content =entry_content +'<p><a href="%s">À suivre / %s photos</a></p>' % (entry_id, entry.photos)
+                    else:
+                        entry_content =entry_content +'<p><a href="%s">À suivre</a></p>' % entry_id
+                if entry.thumbnail:
+                    entry_thumbnail_big = entry.thumbnail
+                    entry_thumbnail_big = re.sub("tn/tn_", "tn/lg_", entry.thumbnail)
+                    entry_content =entry_content +'<img src="http://olivier.thereaux.net%s" width="500px" height="500px" />' % entry_thumbnail_big
+                fe.content(entry_content, type="html")
+
+            # entry.body_abs = entry.body
+            # fe.content(entry.body,type="html")
+        atom_xml = fg.atom_str(pretty=True).decode("utf-8")
+        # Nasty Hack to add a type=html property to the summary element ...
+        atom_fh = open(join(htdocs, 'atom.xml.tmp'), "w") # Write the ATOM feed to a file
+        atom_fh.write(atom_xml)
+        atom_fh.close()
         os.rename(join(htdocs, 'atom.xml.tmp'), join(htdocs, 'atom.xml'))
+
+        # mytemplate = mylookup.get_template("atom.xml")
+        # index = open(join(htdocs, 'atom.xml.tmp'), 'w')
+        # latest_pubdate = atom_selection[0].pubdate
+        #
+        # index.write( mytemplate.render_unicode(
+        #                                 atom_selection=atom_selection,
+        #                                 latest_pubdate=latest_pubdate
+        #                                 ) )
+        # index.close()
+        # os.rename(join(htdocs, 'atom.xml.tmp'), join(htdocs, 'atom.xml'))
 
 if __name__ == "__main__":
     sys.exit(main())
