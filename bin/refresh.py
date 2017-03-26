@@ -531,20 +531,20 @@ def main(argv=None):
         fg = FeedGenerator()
         fg.id('tag:olivier.thereaux.net,2000:1337')
         fg.title('2 Neurones and 1 Camera')
-        # fg.author( {'name':'Olivier Thereaux','uri':'http://olivier.thereaux.net/contact'} )
+        # fg.author( {'name':'Olivier Thereaux','uri':'https://olivier.thereaux.net/contact'} )
         fg.author( {'name':'Olivier Thereaux'} )
-        fg.link( href='http://olivier.thereaux.net/', rel='alternate' )
+        fg.link( href='https://olivier.thereaux.net/', rel='alternate' )
         fg.subtitle('Olivier Thereaux')
-        fg.link( href='http://olivier.thereaux.net/atom.xml', rel='self' )
+        fg.link( href='https://olivier.thereaux.net/atom.xml', rel='self' )
 
         for entry in atom_selection:
             fe = fg.add_entry()
             fe.updated(entry.pubdate)
-            entry_id = "http://olivier.thereaux.net"+entry.uri
+            entry_id = "https://olivier.thereaux.net"+entry.uri
             fe.published(entry.pubdate)
             fe.id(entry_id)
             fe.author( {'name':'Olivier Thereaux'} )
-            entry_link = {"rel": "alternate", "type":"text/html", "href": "http://olivier.thereaux.net"+entry.uri}
+            entry_link = {"rel": "alternate", "type":"text/html", "href": "https://olivier.thereaux.net"+entry.uri}
             fe.link(entry_link)
             fe.title(entry.title)
 
@@ -565,7 +565,7 @@ def main(argv=None):
                 if entry.thumbnail:
                     entry_thumbnail_big = entry.thumbnail
                     entry_thumbnail_big = re.sub("tn/tn_", "tn/lg_", entry.thumbnail)
-                    entry_content =entry_content +'<img src="http://olivier.thereaux.net%s" width="500px" height="500px" />' % entry_thumbnail_big
+                    entry_content =entry_content +'<img src="https://olivier.thereaux.net%s" width="500px" height="500px" />' % entry_thumbnail_big
                 fe.content(entry_content, type="html")
 
             # entry.body_abs = entry.body

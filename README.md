@@ -1,6 +1,6 @@
 # otCMS
 
-otCMS is the diminutive CMS used to run the site [olivier.thereaux.net](http://olivier.thereaux.net/).
+otCMS is the diminutive CMS used to run the site [olivier.thereaux.net](https://olivier.thereaux.net/).
 
 ## Ceci n'est pas un CMS
 
