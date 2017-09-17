@@ -58,8 +58,8 @@ def main():
             if (len(input_desc) != 0):
                 if (input_desc[-1] != "."):
                     delimiter = " – "
-                    
-            rdf_text = rdf_template % {"TITLE": input_title, "LOCATION": input_location, 
+
+            rdf_text = rdf_template % {"TITLE": input_title, "LOCATION": input_location,
             "DATE": input_date, "DESCRIPTION": input_desc, "DELIMITER": delimiter}
             file_rdf = open(fname_rdf, 'w')
             file_rdf.write(rdf_text)
