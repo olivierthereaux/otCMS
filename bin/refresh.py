@@ -581,7 +581,7 @@ def main(argv=None):
             entry.body = re.sub(r'<noscript>(.*)</noscript>', '\\1', entry.body, count=0)
             entry.body = re.compile('<div class="picCenter picCaption">\s*<img(.*)/img>\s*<p>(.*)</p>\s*</div>', re.MULTILINE).sub("<img\\1/img><p><i>\\2</i></p>",entry.body, count=0)
             entry.body = re.compile('<div class="picCenter picCaption">\s*<img(.*) />\s*<p>(.*)</p>\s*</div>', re.MULTILINE).sub("<img\\1 /><p><i>\\2</i></p>",entry.body, count=0)
-            fe.content(entry.body,type="CDATA")
+            fe.content(entry.body,type="html")
         atom_xml = fg.atom_str(pretty=True).decode("utf-8")
         # Nasty Hack to add a type=html property to the summary element ...
         atom_fh = open(join(htdocs, 'atom.xml.tmp'), "w") # Write the ATOM feed to a file
