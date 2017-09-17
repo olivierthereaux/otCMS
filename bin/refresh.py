@@ -172,7 +172,7 @@ def main(argv=None):
                 yearly_lang_html['fr'] = yearly_lang_html['fr'] + '''<h2 id="y%(year)s">%(year)s</h2>''' % {"year": year}
                 yearly_lang_html['fr'] = yearly_lang_html['fr']+ selection_template.render_unicode(selection = yearly_lang_selection['fr'][year])
 
-    # 2. Preparation for ocation based archives / index
+    # 2. Preparation for location based archives / index
     locations = list() # list of all locations. Should be alphabetically sorted
     location_types = dict() # dictionary of all locations per type (Continent, Country, etc)
     loc_selection = dict()  # dictionary of entries, per location
@@ -364,6 +364,7 @@ def main(argv=None):
         dest_fh = open(dest_fn, "w")
         mytemplate = mylookup.get_template("page.html")
         tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
+        clean_abstract = ''
         if entry.abstract:
             clean_abstract = tag_re.sub('', entry.abstract)
             clean_abstract = re.sub('[<>]', '', clean_abstract)
@@ -377,6 +378,7 @@ def main(argv=None):
                                         nearby_body = nearby_html
                                         ))
         dest_fh.close()
+
         if re.search(r"index", source):
             rdf = re.sub(r"index\..*", "", source)+"meta.rdf"
             rdf_fn = join(htdocs, rdf)
@@ -568,14 +570,32 @@ def main(argv=None):
                     entry_content =entry_content +'<img src="https://olivier.thereaux.net%s" width="500px" height="500px" />' % entry_thumbnail_big
                 fe.content(entry_content, type="html")
 
-            # entry.body_abs = entry.body
-            # fe.content(entry.body,type="html")
+            entry.body_abs = entry.body
+
+            entry.body = re.sub(r'src="([0-9])', 'src="'+entry_id+'tn/lg_\\1', entry.body, count=0)
+            # entry.body = re.sub(r'src="([0-9])', 'src="'+entry_id+'\\1', entry.body, count=0)
+            entry.body = re.sub(r'src="tn', 'src="'+entry_id+"tn", entry.body, count=0)
+            entry.body = re.compile(r'<a href[^>]*>(.*)</a>', re.MULTILINE).sub('\\1', entry.body, count=0)
+            entry.body = re.sub(r'<img class="lazy".* />', '', entry.body, count=0)
+            entry.body = re.sub(r'<img src', '<img width="600" src', entry.body, count=0)
+            entry.body = re.sub(r'<noscript>(.*)</noscript>', '\\1', entry.body, count=0)
+            entry.body = re.compile('<div class="picCenter picCaption">\s*<img(.*)/img>\s*<p>(.*)</p>\s*</div>', re.MULTILINE).sub("<img\\1/img><p><i>\\2</i></p>",entry.body, count=0)
+            entry.body = re.compile('<div class="picCenter picCaption">\s*<img(.*) />\s*<p>(.*)</p>\s*</div>', re.MULTILINE).sub("<img\\1 /><p><i>\\2</i></p>",entry.body, count=0)
+            fe.content(entry.body,type="CDATA")
         atom_xml = fg.atom_str(pretty=True).decode("utf-8")
         # Nasty Hack to add a type=html property to the summary element ...
         atom_fh = open(join(htdocs, 'atom.xml.tmp'), "w") # Write the ATOM feed to a file
         atom_fh.write(atom_xml)
         atom_fh.close()
         os.rename(join(htdocs, 'atom.xml.tmp'), join(htdocs, 'atom.xml'))
+
+        # rss_xml = fg.rss_str(pretty=True).decode("utf-8")
+        # # Nasty Hack to add a type=html property to the summary element ...
+        # rss_fh = open(join(htdocs, 'rss.xml.tmp'), "w") # Write the ATOM feed to a file
+        # rss_fh.write(rss_xml)
+        # rss_fh.close()
+        # os.rename(join(htdocs, 'rss.xml.tmp'), join(htdocs, 'rss.xml'))
+
 
         # mytemplate = mylookup.get_template("atom.xml")
         # index = open(join(htdocs, 'atom.xml.tmp'), 'w')
