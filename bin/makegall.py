@@ -17,10 +17,11 @@ help_message = '''
 makegall.py - Find jpg fnames in current dir and output basic gallery markup
 
 Options:
-    --inline        output markup to display images in the post
-    --inline-lazy   output markup to display images in the post, with lazy load
-                    (default is to have thumbnails)
-    -h              this help message
+    --inline  output markup to display images in the post
+    --thumb   output markup to display gallery of thumbnails
+    --lazy    output markup to display images in the post, with lazy load
+              (default is --inline)
+    -h        this help message
 '''
 
 def getImageSizes(fname):
@@ -78,22 +79,25 @@ def readRDF(fname):
 
 
 def main(argv=None):
+    mode = "inline" # default
     inline = False
     inline_lazy = False
     if argv is None:
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help", "inline", "inline-lazy"])
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "thumb", "inline", "lazy"])
         except getopt.error as msg:
             raise Usage(msg)
 
         # option processing
         for option, value in opts:
             if option == "--inline":
-                inline = True
-            if option == "--inline-lazy":
-                inline_lazy = True
+                mode = "inline"
+            if option == "--lazy":
+                mode = "lazy"
+            if option == "--thumb":
+                mode = "thumb"
             if option in ("-h", "--help"):
                 raise Usage(help_message)
 
@@ -102,17 +106,23 @@ def main(argv=None):
         print("\t for help use --help", file=sys.stderr)
         return 2
 
-    if inline:
+    if mode=="inline-nojs":
+        template_markup = '''<div class="picCenter picCaption">
+  <a href="#img%(fname)s"><img src="%(fname)s" class="thumbnail" alt="%(alt_text)s" title="%(link_text)s"></a>
+  <p>%(title_text)s</p>
+  <a href="#_" class="lightbox" id="img%(fname)s"><img src="%(fname)s"></a>
+</div>'''
+    elif mode=="inline":
         template_markup = '''<div class="picCenter picCaption">
     <a href="%(fname)s" class="fresco" data-fresco-group="inline" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s"><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s" /></a>
     <p><a href="%(fname)s" class="fresco" data-fresco-group="inline-text" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
 </div>'''
-    elif inline_lazy:
+    elif mode =="lazy":
         template_markup = '''<div class="picCenter picCaption">
     <a href="%(fname)s" class="fresco" data-fresco-group="inline" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s"><img class="lazy" data-original="%(fname)s" width="%(rel_width)d" height="%(rel_height)d" alt="%(alt_text)s" title="%(link_text)s" /><noscript><img src="%(fname)s" alt="%(alt_text)s" title="%(link_text)s"></img></noscript></a>
     <p><a href="%(fname)s" class="fresco" data-fresco-group="inline-text" data-fresco-group-options="ui: 'inside', thumbnails: 'vertical'" data-fresco-caption="%(title_text)s">%(title_text)s</a></p>
 </div>'''
-    else:
+    elif mode=="thumb":
         print('<div class="gall">')
         template_markup =  '''  <div class="gallone">
         <a href="%(fname)s" class="fresco"
@@ -141,7 +151,7 @@ def main(argv=None):
                 title_text = description
                 link_text = title
             print(template_markup % {"fname": fname, 'alt_text': alt_text, "link_text": link_text, "title_text": title_text, "rel_width": sizes["rel_width"], "rel_height": sizes["rel_height"]})
-    if not inline and not inline_lazy:
+    if mode == "thumb":
         print('</div>')
 
 if __name__ == '__main__':
