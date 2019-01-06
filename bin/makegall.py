@@ -137,6 +137,7 @@ def main(argv=None):
         data-fresco-group="gall_text" >%(link_text)s</a></p>
     </div>'''
     dirList=os.listdir(".")
+    dirList.sort()
     for fname in dirList:
         if re.search(r".jpg$", fname):
             sizes = getImageSizes(fname)
