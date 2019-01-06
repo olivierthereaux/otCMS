@@ -501,7 +501,7 @@ def main(argv=None):
 
         # 5. Generate the Home Page
 
-        latest_selection=entries[0:4]
+        latest_selection=entries[0:6]
         entries_featurable = list()
         for entry in entries:
             if entry.abstract != None and entry.thumbnail != None and entry not in latest_selection:
