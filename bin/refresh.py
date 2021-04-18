@@ -529,7 +529,7 @@ def main(argv=None):
 
         # 5. Generate the Atom Feed
 
-        atom_selection=entries[0:20]
+        atom_selection=entries[0:49]
         fg = FeedGenerator()
         fg.id('tag:olivier.thereaux.net,2000:1337')
         fg.title('2 Neurones and 1 Camera')
