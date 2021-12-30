@@ -88,7 +88,7 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv[1:], "h", ["help", "thumb", "inline", "lazy"])
         except getopt.error as msg:
-            raise Usage(msg)
+            raise RuntimeError(msg)
 
         # option processing
         for option, value in opts:
@@ -99,9 +99,10 @@ def main(argv=None):
             if option == "--thumb":
                 mode = "thumb"
             if option in ("-h", "--help"):
-                raise Usage(help_message)
+                print(help_message)
+                sys.exit()
 
-    except Usage as err:
+    except AssertionError as err:
         print(sys.argv[0].split("/")[-1] + ": " + str(err.msg), file=sys.stderr)
         print("\t for help use --help", file=sys.stderr)
         return 2
