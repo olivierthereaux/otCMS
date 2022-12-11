@@ -509,7 +509,7 @@ def main(argv=None):
         random_selection=random.sample(entries_featurable, 4)
         latest_selection_html = selection_template.render_unicode(selection = latest_selection)
         random_selection_html = selection_template.render_unicode(selection = random_selection)
-        title= "2 Neurones &amp; 1 Camera - by @olivierthereaux"
+        title= "Olivier Thereaux"
         page_description = 'Travelogue, street photography, a bit of poetry, and the simple pleasure of telling stories. Around the world, from Europe to Japan, from Paris to London via Tokyo and Montreal'
         page_type = "Home"
         mytemplate = mylookup.get_template("index_main.html")
