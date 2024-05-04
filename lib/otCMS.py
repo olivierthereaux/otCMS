@@ -59,6 +59,7 @@ class otCMSEntry(object):
     location = None
     body = None
     language = None
+    featured = None
 
     def __init__(self):
         super(otCMSEntry, self).__init__()
@@ -102,6 +103,8 @@ class otCMSEntry(object):
             self.location = dict_entry["Location"]
         if "Body" in dict_entry:
             self.body = dict_entry["Body"].decode("utf-8")
+        if "Featured" in dict_entry:
+            self.featured = dict_entry["Featured"]
 
     def todict(self):
         dict_entry = dict()
@@ -135,6 +138,9 @@ class otCMSEntry(object):
             dict_entry["Body"] = self.body
         if self.language != None:
             dict_entry["Language"] = self.language
+        if self.featured != None:
+            dict_entry["Featured"] = self.featured
+
         return dict_entry
 
 

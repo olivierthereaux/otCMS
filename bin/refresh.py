@@ -501,14 +501,21 @@ def main(argv=None):
 
         # 5. Generate the Home Page
 
-        latest_selection=entries[0:6]
+        latest_selection=entries[0:4]
         entries_featurable = list()
+        entries_spotlight = list()
         for entry in entries:
             if entry.abstract != None and entry.thumbnail != None and entry not in latest_selection:
                 entries_featurable.append(entry)
+            if entry.featured != None:
+                if entry.featured == True:
+                    entries_spotlight.append(entry)
+            
         random_selection=random.sample(entries_featurable, 4)
         latest_selection_html = selection_template.render_unicode(selection = latest_selection)
         random_selection_html = selection_template.render_unicode(selection = random_selection)
+        spotlight_selection_html = selection_template.render_unicode(selection = entries_spotlight)
+
         title= "Olivier Thereaux"
         page_description = 'Travelogue, street photography, a bit of poetry, and the simple pleasure of telling stories. Around the world, from Europe to Japan, from Paris to London via Tokyo and Montreal'
         page_type = "Home"
@@ -519,6 +526,7 @@ def main(argv=None):
         index.write( mytemplate.render_unicode(
                                         latest_selection=latest_selection_html,
                                         random_selection=random_selection_html,
+                                        spotlight_selection=spotlight_selection_html,
                                         title=title, page_description=page_description,
                                         page_type=page_type,
                                         page_language = ""
