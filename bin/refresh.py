@@ -501,7 +501,7 @@ def main(argv=None):
 
         # 5. Generate the Home Page
 
-        latest_selection=entries[0:4]
+        latest_selection=entries[0:3]
         entries_featurable = list()
         entries_spotlight = list()
         for entry in entries:
