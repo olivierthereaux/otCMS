@@ -12,7 +12,7 @@ import getopt
 import os
 import random
 import re
-import cgi
+# import cgi
 import time
 from os.path import join, dirname, exists, realpath
 import markdown2
@@ -587,8 +587,8 @@ def main(argv=None):
             entry.body = re.sub(r'<img class="lazy".* />', '', entry.body, count=0)
             entry.body = re.sub(r'<img src', '<img width="600" src', entry.body, count=0)
             entry.body = re.sub(r'<noscript>(.*)</noscript>', '\\1', entry.body, count=0)
-            entry.body = re.compile('<div class="picCenter picCaption">\s*<img(.*)/img>\s*<p>(.*)</p>\s*</div>', re.MULTILINE).sub("<img\\1/img><p><i>\\2</i></p>",entry.body, count=0)
-            entry.body = re.compile('<div class="picCenter picCaption">\s*<img(.*) />\s*<p>(.*)</p>\s*</div>', re.MULTILINE).sub("<img\\1 /><p><i>\\2</i></p>",entry.body, count=0)
+            entry.body = re.compile(r'<div class="picCenter picCaption">\s*<img(.*?)/img>\s*<p>(.*?)</p>\s*</div>', re.MULTILINE,).sub(r'<img\1/img><p><i>\2</i></p>', entry.body,)
+            entry.body = re.compile(r'<div class="picCenter picCaption">\s*<img(.*?) />\s*<p>(.*?)</p>\s*</div>', re.MULTILINE,).sub(r'<img\1 /><p><i>\2</i></p>',entry.body,)
             fe.content(entry.body,type="html")
         atom_xml = fg.atom_str(pretty=True).decode("utf-8")
         # Nasty Hack to add a type=html property to the summary element ...
